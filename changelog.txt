@@ -1,0 +1,12 @@
+v 1.00.00 
+06/27/2025
+- Began project
+- Created general outline of fileand folder structure
+- Began outline of species details
+- Added template.pdf to use after the character is created
+
+v 1.00.00
+06/27/2025
+- Added remaining species details
+- Created utility function to pull, interpret, and present species information from the species dictionaries
+- Tied this back to main.py to allow reading of species data. Will later be used to determine species used in character creation
