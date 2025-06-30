@@ -113,4 +113,23 @@ def print_species_traits(species_name: str) -> None:
         else:
             print(f'  {desc}\n')
 
+def get_species_traits(species_name: str):
+    """
+    Return the list of traits for the given species name from SPECIES_DATA.
+
+    Args:
+        species_name (str): The name of the species to get traits for.
+
+    Returns:
+        list: A list of traits for the species, or an empty list if the species is not found.
+
+    Tip:
+        This function provides a simple way to access the traits of a species
+        without additional formatting or display logic.
+    """
+    species = SPECIES_DATA.get(species_name)
+    if species:
+        return species.get(traits, [])
+    return []
+
 
