@@ -9,6 +9,7 @@ from misc.abilities import (
     ABILITY_NAMES
 )
 from species.species import main as species_select_main
+from misc.backgrounds import select_background
 
 # Add additional imports as needed for other modules
 
@@ -62,12 +63,11 @@ class charGen:
         This method can be expanded to include more complex character creation logic.
         """
         self.character_setup()
+        self.determine_ability_scores()
         self.choose_background()
         self.choose_class()
         self.choose_species()
-        self.determine_ability_scores()
         print("Character created successfully!")
-        print(self)
         
     def character_setup(self):
         """
@@ -76,16 +76,33 @@ class charGen:
         """
         print("Setting up character...")
         self.player_name = input("What is your, the player's, name?\n> ")
-        self.character_name = input("What is your characters name?\n> ")
+        self.name = input("What is your characters name?\n> ")
     
     def choose_background(self):
         """
-        Choose a background for the character using the background selection module.
-        Saves the background to the character instance.
+        Choose a background for the character using the backgrounds selection function.
+        Saves the background and its details to the character instance.
+        Also saves feat, skills, equipment, and applies ability score increases.
         """
-        # Placeholder for background selection logic
-        self.background = input("Choose a background for your character: ")
-        print(f"{self.background} selected as background.")
+        bg_info = select_background()
+        if bg_info:
+            self.background = bg_info.get('Description', '')
+            self.background_details = bg_info
+            # Feat
+            self.feats = [bg_info.get('Feat')] if bg_info.get('Feat') else []
+            # Skills
+            self.skills = bg_info.get('Skill Proficiencies', [])
+            # Equipment
+            self.equipment = bg_info.get('Selected Equipment', [])
+            # Apply ability score increases
+            asi = bg_info.get('Ability Score Increases', {})
+            if asi and self.ability_scores:
+                for k, v in asi.items():
+                    if k in self.ability_scores:
+                        self.ability_scores[k] += v
+            print(f"Background selected: {self.background}")
+        else:
+            print("No background selected.")
     
     def choose_class(self):
         """
