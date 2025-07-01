@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 import inquirer
 
 BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
     'Acolyte': {
+        'Name': 'Acolyte',
         'Description': 'You were a devoted servant in a place of worship. You learned the rituals '
         'of your faith and how to channel divine power as part of your service.',
         'Ability Scores': ['Intelligence', 'Wisdom', 'Charisma'],
@@ -14,6 +16,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Artisan': {
+        'Name': 'Artisan',
         'Description': 'You worked your way up from scrubbing floors to an apprenticeship creating '
         'your own crafts. You know how to schmooze a customer and have a keen eye for detail.',
         'Ability Scores': ['Strenth', 'Dexterity', 'Intelligence'],
@@ -24,6 +27,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Charlatan': {
+        'Name': 'Charlatan',
         'Description': 'You have learned to seek out a mark in taverns and pubs, and find the people '
         'most in search of less than honest goods, such as forgeries or sham magic items.',
         'Ability Scores': ['Dexterity', 'Constitution', 'Charisma'],
@@ -34,6 +38,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Criminal': {
+        'name': 'Criminal',
         'Description': 'Whether you were a member of a criminal crew or a solo thief who only looked '
         'out for yourself, you know the best ways to slice some purse strings or how to find '
         'alternative means to enter a locked shop.',
@@ -46,6 +51,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Entertainer': {
+        'name': 'Entertainer',
         'Description': 'You\'ve spent your life on either a literal or proverbial stage, performing '
         'for willing audiences. You have learned how to channel your talent for creation into a '
         'crowd-pleasing art form.',
@@ -58,6 +64,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Farmer': {
+        'Name': 'Farmer',
         'Description': 'You\'ve tilled the soil or raised animals as livestock or to aid you in '
         'cultivating your fields. You\'ve gained a healthy respect for nature, in both its bounty and '
         'its wrath.',
@@ -70,6 +77,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Guard': {
+        'Name': 'Guard',
         'Description': 'You\'ve put in your time standing watch over a city or location. You\'ve had '
         'your head on a swivel, keeping a watchful eye on raiding enemies on one side of a wall or '
         'criminal elements on the other.',
@@ -83,6 +91,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Hermit': {
+        'Name': 'Hermit',
         'Description': 'Whether alone in a hut or as part of a monastery, you\'ve spent a considerable '
         'amount of time outside the trappings of society. You’ve grown comfortable pondering the wonders '
         'and mysteries of creation.',
@@ -95,6 +104,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Merchant': {
+        'Name': 'Merchant',
         'Description': 'As an apprentice to a trader or shopkeeper, you traveled either supplying artisans '
         'with the materials they needed or acquiring their goods to sell to your customers. You know how '
         'to make a deal and how to handle a long journey.',
@@ -107,6 +117,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Noble': {
+        'Name': 'Noble',
         'Description': 'You grew up in the opulence and structure of wealth and societal privilege. You may '
         'have bristled against the restrictions and expectations of your role, but you learned a lot about '
         'courtly intrigue and the skills of leadership.',
@@ -118,6 +129,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Sage': {
+        'Name': 'Sage',
         'Description': 'Your thirst for knowledge drew you to some of the greatest libraries and archives in '
         'the world. You\'ve got a knack for research and perhaps a rudimentary knowledge of magic gleaned '
         'from a book or two.',
@@ -130,6 +142,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Sailor': {
+        'Name': 'Sailor',
         'Description': 'You called the open water your home, survived some of the sea\'s harshest storms. '
         'You\'ve swapped stories with the best of them, whether that\'s on the barstool of a random port or '
         'the denizens of the world beneath the waves.',
@@ -142,6 +155,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Scribe': {
+        'Name': 'Scribe',
         'Description': 'The written word has been your domain, either copying tomes, crafting government '
         'documents, or producing your own texts. Your eye for detail and ability to catch errors and '
         'mistakes is finely honed.',
@@ -154,6 +168,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Soldier': {
+        'Name': 'Soldier',
         'Description': 'You can hardly remember a time when you didn\'t wield a weapon. You\'re well-versed '
         'in the ways of battle and war to protect the realm, and you have the muscle memory to prove it.',
         'Ability Scores': ['Strength', 'Dexterity', 'Constitution'],
@@ -164,6 +179,7 @@ BACKGROUND_DICT: dict[str, dict[str, str | list[str] | list[list[str]]]] = {
                       ['50 GP']]
     },
     'Wayfarer': {
+        'Name': 'Wayfarer',
         'Description': 'An urchin or societal castoff, you learned to survive. Forging your own path on the '
         'streets and possibly turning to crime when needed, you’ve managed to keep your pride and hope that '
         'destiny has more for you yet.',

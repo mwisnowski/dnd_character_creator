@@ -162,12 +162,12 @@ GIANT_ANCESTRY: Dict[str, str] = {
 }
 
 GNOMSIH_LINEAGE: Dict[str, str] = {
-    '  Forest Gnome':
+    'Forest Gnome':
         'You know the Minor Illusion cantrip.\n'
         'You also always have the Speak with Animals spell prepared. You can cast it without a spell slot a '
         'number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a '
         'Long Rest. You can also use any spell slots you have to cast the spell.',
-    '  Rock Gnome':
+    'Rock Gnome':
         'You know the Mending and Prestidigitation cantrips. In addition, you can spend 10 minutes casting '
         'Prestidigitation to create a Tiny clockwork device (AC 5,1 HP), such as a toy, fire starter, or '
         'music box. When you create the device, you determine its function by choosing one effect from '
@@ -180,15 +180,15 @@ GNOMSIH_LINEAGE: Dict[str, str] = {
 }
 
 FIENDISH_LEGACY: Dict[str, str] = {
-    '  Abyssal': 
+    'Abyssal': 
         '- You have Resistance to Poison damage. You also know the Poison Spray cantrip.\n'
         '- At 3rd level, you can cast the Ray of Sickness spell once per long rest.\n'
         '- At 5th level, you can cast the Hold Person spell once per long rest.\n',
-    '  Chthonic':
+    'Chthonic':
         '- You have Resistance to Necrotic damage. You also know the Chill Touch cantrip.\n'
         '- At 3rd level, you can cast the Ralse Life spell once per long rest.\n'
         '- At 5th level, you can cast the Ray of Enfeeblement spell once per long rest.\n',
-    '  Infernal':
+    'Infernal':
         '- You have Resistance to Poison damage. You also know the Poison Spray cantrip.\n'
         '- At 3rd level, you can cast the Hellish Rebuke spell once per long rest.\n'
         '- At 5th level, you can cast the Darkness spell once per long rest.\n'

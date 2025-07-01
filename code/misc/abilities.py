@@ -63,6 +63,14 @@ def interactive_ability_assignment() -> dict[str, int]:
         print(f"{ability.ljust(max_key_len + 2)} {value}")
     return save_ability_scores(assigned)
 
+def ability_modifier(score: int) -> int:
+    """
+    Calculate the D&D ability modifier for a given ability score.
+    10-11 = 0, every 2 above 10 is +1, every 2 below 10 is -1.
+    """
+    return (score - 10) // 2
+
+
 # Example usage:
 # rolled_scores = roll_ability_scores()
 # save_ability_scores(rolled_scores, 'chosen_ability_scores.txt')

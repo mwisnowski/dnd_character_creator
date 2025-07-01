@@ -1,7 +1,7 @@
 """
 Utility functions for species data management and display in the D&D character creator project.
 
-This module provides fuzzy matching for species names and formatted printing of species traits,
+This module provides formatted printing of species traits,
 including special handling for trait tables and readable output for the command-line interface.
 It is intended to be imported and used by the main menu and species modules.
 """
@@ -9,52 +9,20 @@ It is intended to be imported and used by the main menu and species modules.
 from __future__ import annotations
 
 # Standard Python imports
-import difflib
 import textwrap
 
 # Local imports
 from .species_dict import SPECIES_DATA, TRAIT_DATA, size, speed, traits, description
+from InquirerPy import inquirer
 
-def get_best_species_match(user_input: str, species_dict: dict) -> str | None:
-    """
-    Attempts to find the best matching species name from the dictionary.
-
-    Args:
-        user_input (str): The species name input by the user (case-insensitive, can be plural or misspelled).
-        species_dict (dict): The dictionary of available species.
-
-    Returns:
-        str | None: The best-matching species name from the dictionary, or None if no match is found.
-
-    Tip:
-        This function supports direct, singular/plural, and fuzzy matching for user convenience.
-    """
-    lower_map = {k.lower(): k for k in species_dict.keys()}
-    user_input_l = user_input.lower()
-    # Try direct match
-    if user_input_l in lower_map:
-        return lower_map[user_input_l]
-    # Try removing plural 's' or 'ves'
-    if user_input_l.endswith('ves'):
-        singular = user_input_l[:-3] + 'f'
-        if singular in lower_map:
-            return lower_map[singular]
-    if user_input_l.endswith('s'):
-        singular = user_input_l[:-1]
-        if singular in lower_map:
-            return lower_map[singular]
-    # Fuzzy match
-    close = difflib.get_close_matches(user_input_l, lower_map.keys(), n=1, cutoff=0.7)
-    if close:
-        return lower_map[close[0]]
-    return None
-
-def print_species_traits(species_name: str) -> None:
+def print_species_traits(species_name: str, override_traits: list[str] = None, trait_desc_overrides: dict = None) -> None:
     """
     Prints the traits and descriptions for a given species name.
 
     Args:
         species_name (str): The name of the species to display information for.
+        override_traits (list[str], optional): If provided, use this list of traits instead of the default.
+        trait_desc_overrides (dict, optional): If provided, use these descriptions for the specified traits.
 
     Returns:
         None
@@ -63,21 +31,26 @@ def print_species_traits(species_name: str) -> None:
         This function prints all relevant species information, including special handling for Darkvision
         in Dwarves and Orcs, and aligns trait tables for readability.
     """
-    best_match = get_best_species_match(species_name, SPECIES_DATA)
-    if not best_match:
+    species_info = SPECIES_DATA.get(species_name)
+    if not species_info:
         print(f'Species "{species_name}" not found.')
         return
-    species_info = SPECIES_DATA[best_match]
-    print(f'Species: {best_match}')
+    print(f'Species: {species_name}')
     print(f'Size: {species_info[size]}')
     print(f'Speed: {species_info[speed]}')
     print(f'Description: {species_info.get(description, "No description available")}\n')
-    print(f'As a {best_match} you have the following traits:')
-    for trait in species_info[traits]:
+    print(f'As a {species_name} you have the following traits:')
+    trait_source = override_traits if override_traits is not None else species_info[traits]
+    for trait in trait_source:
         print(f'Trait: {trait}')
-        desc = TRAIT_DATA.get(trait)
+        # Use override description if provided
+        desc = None
+        if trait_desc_overrides and trait in trait_desc_overrides:
+            desc = trait_desc_overrides[trait]
+        else:
+            desc = TRAIT_DATA.get(trait)
         # Special case: Dwarves and Orcs have 120 ft Darkvision
-        if (best_match.lower() == "dwarf" or best_match.lower() == 'orc') and trait == "Darkvision":
+        if (species_name.lower() == "dwarf" or species_name.lower() == 'orc') and trait == "Darkvision":
             print('  You have Darkvision with a range of 120 feet.\n')
             continue
         if desc is None:
@@ -131,5 +104,34 @@ def get_species_traits(species_name: str):
     if species:
         return species.get(traits, [])
     return []
+
+def handle_special_skill_traits(traits: list, current_skills: list) -> list:
+    """
+    Handle special skill-granting traits like Keen Senses and Skillful.
+    Prompts the user to choose a skill if needed and returns the updated skills list.
+    """
+    # For Keen Senses
+    keen_skills = ["Insight", "Perception", "Survival"]
+    if "Keen Senses" in traits:
+        # Only show non-proficient keen skills
+        non_proficient_keen = [s for s in keen_skills if s not in current_skills]
+        if non_proficient_keen:
+            choice = inquirer.select(
+                message="Keen Senses: Choose a skill to gain proficiency in:",
+                choices=non_proficient_keen
+            ).execute()
+            current_skills.append(choice)
+    # For Skillful
+    if "Skillful" in traits:
+        from misc.skills import SKILLS_DICT
+        all_skills = list(SKILLS_DICT.keys())
+        non_proficient = [s for s in all_skills if s not in current_skills]
+        if non_proficient:
+            choice = inquirer.select(
+                message="Skillful: Choose any skill to gain proficiency in:",
+                choices=non_proficient
+            ).execute()
+            current_skills.append(choice)
+    return current_skills
 
 

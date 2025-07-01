@@ -6,12 +6,36 @@ from misc.abilities import (
     roll_ability_scores,
     save_ability_scores,
     interactive_ability_assignment,
-    ABILITY_NAMES
+    ABILITY_NAMES,
+    ability_modifier
 )
 from species.species import main as species_select_main
 from misc.backgrounds import select_background
+from misc.skills import calculate_skill_scores
+from species.species_utils import print_species_traits, handle_special_skill_traits, SPECIES_DATA, traits
+from classes.class_selection import select_class
+
+PROFICIENCY_BONUS: dict(int, str) = {
+    "<4": "+2",
+}
 
 # Add additional imports as needed for other modules
+
+def get_proficiency_bonus(level: int) -> int:
+    """
+    Returns the proficiency bonus for a given character level.
+    1-4: +2, 5-8: +3, 9-12: +4, 13-16: +5, 17-20: +6
+    """
+    if level >= 17:
+        return 6
+    elif level >= 13:
+        return 5
+    elif level >= 9:
+        return 4
+    elif level >= 5:
+        return 3
+    else:
+        return 2
 
 class charGen:
     def __init__(
@@ -22,11 +46,11 @@ class charGen:
         background: str = "",
         level: int = 1,
         ability_scores: dict[str, int] = None,
-        alignment: str = "",
+        alignment: str = "N/A",
         player_name: str = "",
         experience_points: int = 0,
-        gender: str = "",
-        age: int = 0,
+        gender: str = "N/A",
+        age: int = 18,
     ):
         self.name = name
         self.species = species
@@ -39,23 +63,72 @@ class charGen:
         self.experience_points = experience_points
         self.gender = gender
         self.age = age
+        self.proficiency_bonus = get_proficiency_bonus(self.level)
+
+    def as_dict(self):
+        """
+        Return the character as a dictionary of all main attributes for easy display or export.
+        """
+        return {
+            "Name": self.name,
+            "Species": self.species,
+            "Class": self.class_name,
+            "Background": self.background,
+            "Level": self.level,
+            "Alignment": self.alignment,
+            "Player Name": self.player_name,
+            "XP": self.experience_points,
+            "Gender": self.gender,
+            "Age": self.age,
+            "Ability Scores": self.ability_scores if self.ability_scores else {},
+            "Species Traits": self.species_traits if hasattr(self, 'species_traits') else [],
+            "Skill Scores": self.skill_scores if hasattr(self, 'skill_scores') else {},
+        }
 
     def __str__(self):
-        max_key_len = max(len(k) for k in self.ability_scores) if self.ability_scores else 0
-        abilities = "\n".join(f"{k.ljust(max_key_len)} : {v}" for k, v in self.ability_scores.items())
-        return (
-            f"Name           : {self.name}\n"
-            f"Species        : {self.species}\n"
-            f"Class          : {self.class_name}\n"
-            f"Background     : {self.background}\n"
-            f"Level          : {self.level}\n"
-            f"Alignment      : {self.alignment}\n"
-            f"Player Name    : {self.player_name}\n"
-            f"XP             : {self.experience_points}\n"
-            f"Gender         : {self.gender}\n"
-            f"Age            : {self.age}\n"
-            f"Ability Scores :\n{abilities}"
-        )
+        char_dict = self.as_dict()
+        # Only keys from Name through Age for alignment
+        main_keys = [
+            "Name", "Species", "Class", "Background", "Level", "Alignment",
+            "Player Name", "XP", "Gender", "Age"
+        ]
+        max_key_len = max(len(k) for k in main_keys)
+        lines = []
+        for k in main_keys:
+            v = char_dict[k]
+            lines.append(f"{k + ':':<{max_key_len+2}} {v}")
+        # Print Ability Scores
+        lines.append("Ability Scores:")
+        abilities = char_dict["Ability Scores"]
+        if abilities:
+            ability_key_len = max(len(k) for k in abilities)
+            for subk, subv in abilities.items():
+                mod = ability_modifier(subv)
+                mod_str = f"+{mod}" if mod > 0 else str(mod)
+                lines.append(f"  {subk + ':':<{ability_key_len+3}} {subv} ({mod_str})")
+        else:
+            lines.append("  None")
+        # Print Skill Scores
+        lines.append("Skill Scores:")
+        skills = char_dict["Skill Scores"]
+        if skills:
+            skill_key_len = max(len(k) for k in skills)
+            for skill, tup in skills.items():
+                value, proficient = tup if isinstance(tup, tuple) else (tup, False)
+                mod_str = f"+{value}" if value > 0 else str(value)
+                prof_mark = " (X)" if proficient else ""
+                lines.append(f"  {skill + ':':<{skill_key_len+3}} {mod_str}{prof_mark}")
+        else:
+            lines.append("  None")
+        # Print Species Traits
+        lines.append("Species Traits:")
+        traits = char_dict["Species Traits"]
+        if traits:
+            for item in traits:
+                lines.append(f"  - {item}")
+        else:
+            lines.append("  None")
+        return "\n".join(lines)
         
     def make_character(self):
         """
@@ -67,6 +140,7 @@ class charGen:
         self.choose_background()
         self.choose_class()
         self.choose_species()
+        self.calculate_skills()
         print("Character created successfully!")
         
     def character_setup(self):
@@ -86,7 +160,7 @@ class charGen:
         """
         bg_info = select_background()
         if bg_info:
-            self.background = bg_info.get('Description', '')
+            self.background = bg_info.get('Name', '') or next(iter(bg_info.keys()), '')
             self.background_details = bg_info
             # Feat
             self.feats = [bg_info.get('Feat')] if bg_info.get('Feat') else []
@@ -103,13 +177,24 @@ class charGen:
             print(f"Background selected: {self.background}")
         else:
             print("No background selected.")
-    
+            
     def choose_class(self):
         """
         Choose a class for the character using the class selection module.
-        Saves the class name to the character instance.
-        """ 
-        pass
+        Saves the class name, chosen skills, and class features to the character instance.
+        """
+        already_proficient = getattr(self, 'skills', [])
+        result = select_class(current_level=self.level, already_proficient=already_proficient)
+        if result:
+            self.class_name = result['class_name']
+            # Add chosen class skills to self.skills, avoiding duplicates
+            for skill in result['chosen_skills']:
+                if skill not in self.skills:
+                    self.skills.append(skill)
+            self.class_features = result['class_features']
+            print(f"Class selected: {self.class_name}")
+        else:
+            print("No class selected.")
     
     def choose_species(self):
         """
@@ -120,7 +205,30 @@ class charGen:
         if result and isinstance(result, dict):
             self.species = result.get('species', '')
             self.species_traits = result.get('species_traits', {})
-            print(f"{self.species} selected as species.")
+            # Handle special skill-granting traits
+            if hasattr(self, 'skills'):
+                skills_before = set(self.skills)
+            else:
+                self.skills = []
+                skills_before = set()
+            updated_skills = handle_special_skill_traits(self.species_traits, self.skills)
+            # If a skill was added, update the trait name to include the skill
+            keen_skills = ["Insight", "Perception", "Survival"]
+            if "Keen Senses" in self.species_traits:
+                added = set(updated_skills) - skills_before
+                for skill in keen_skills:
+                    if skill in added:
+                        idx = self.species_traits.index("Keen Senses")
+                        self.species_traits[idx] = f"Keen Senses - {skill}"
+                        break
+            if "Skillful" in self.species_traits:
+                added = set(updated_skills) - skills_before
+                for skill in updated_skills:
+                    if skill in added:
+                        idx = self.species_traits.index("Skillful")
+                        self.species_traits[idx] = f"Skillful - {skill}"
+                        break
+            self.skills = updated_skills
         else:
             print("No species selected.")
     
@@ -133,9 +241,21 @@ class charGen:
         else:
             print(self.ability_scores)
 
-# Example usage (remove or comment out in production):
+    def calculate_skills(self):
+        """
+        Determine skills for the character based on class and background.
+        Calculates skill values using ability scores and proficiency bonus.
+        """
+        if not hasattr(self, 'skills'):
+            self.skills = []
+        self.skill_scores = calculate_skill_scores(
+            self.ability_scores or {},
+            self.proficiency_bonus,
+            self.skills
+        )
+
 if __name__ == "__main__":
     # Example: Create a character and print details
     character = charGen()
     character.make_character()
-    print("\nCharacter Sheet:\n", character)
+    print("\nCharacter Sheet:\n", character, sep='')

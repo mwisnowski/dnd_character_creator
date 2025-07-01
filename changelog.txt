@@ -23,3 +23,13 @@ v 1.00.02
 v 1.00.02
 06/30/2025
 - Added background information and selection
+
+v 1.00.03
+07/01/2025
+- Implemented unified ability and skill score display with proficiency marks
+- Added logic for skill proficiency selection from traits (Keen Senses, Skillful) with user prompts
+- Skill scores will show (X) for proficient skills in character sheet
+- Improved trait handling and display for species selection, including lineage/ancestry
+- Added menu-driven class selection using InquirerPy, with prettytable class progression display
+- Modularized class selection logic for future class expansion
+- Added Weapon and Armor dictionaries for later use
