@@ -67,7 +67,7 @@ Branch: classes_work
 
 v 1.00.07
 07/02/2025
-Branch: classes_work
+Branch: spells_work
 - Overhauled spell learning and class selection workflow for modularity and user experience:
   - Spell selection now supports learning multiple spells per level, as dictated by the class's spellcasting table.
   - Users can select spells from any available spell level, and the system prevents duplicate selections.
@@ -76,3 +76,13 @@ Branch: classes_work
   - Fixed known_spells handling to support multiple spells and ensure proper display at the end of character creation.
 - General improvements to code modularity, maintainability, and error handling in the class and spell selection modules.
 
+v 1.00.08
+07/02/2025
+- Unified and robust proficiency handling across class, background, and species:
+  - All sources now return a structured proficiencies dict (weapons, armor, tools), which is merged and deduplicated in character creation.
+  - Character sheet displays all proficiencies, with weapon types categorized using the weapon dictionaries.
+- Cleric class added
+- General improvements:
+  - Passing and merging of proficiencies from all sources is now robust and future-proof.
+  - All class/domain/feature-based proficiencies and spell choices are now correctly reflected in the character sheet.
+  - Refactored code for clarity and maintainability in class_utils and character_creation.

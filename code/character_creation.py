@@ -68,6 +68,12 @@ class charGen:
         self.gold_pieces = 0
         self.silver_pieces = 0
         self.copper_pieces = 0
+        # Track all proficiencies from class, background, and species
+        self.proficiencies = {
+            'weapons': set(),
+            'armor': set(),
+            'tools': set(),
+        }
 
     def as_dict(self):
         """
@@ -87,17 +93,94 @@ class charGen:
             "Ability Scores": self.ability_scores if self.ability_scores else {},
             "Species Traits": getattr(self, 'species_traits', []),
             "Skill Scores": getattr(self, 'skill_scores', {}),
+            "Proficiencies": self.proficiencies,
         }
+
 
     def __str__(self):
         char_dict = self.as_dict()
-        # Only keys from Name through Age for alignment
         main_keys = [
             "Name", "Species", "Class", "Background", "Level", "Alignment",
             "Player Name", "XP", "Gender", "Age"
         ]
         max_key_len = max(len(k) for k in main_keys)
         lines = [f"{k + ':':<{max_key_len+2}} {char_dict[k]}" for k in main_keys]
+
+        # Print Class Features
+        lines.append("Class Features:")
+        class_name = getattr(self, 'class_name', None)
+        class_features = getattr(self, 'class_features', [])
+        special_choices = getattr(self, 'class_special_choices', {})
+        if class_name and class_features:
+            lines.append(f"  {class_name}")
+            for feature in class_features:
+                lines.append(f"    - {feature}")
+                # Show special choices for this feature if present
+                if special_choices and feature in special_choices:
+                    val = special_choices[feature]
+                    if isinstance(val, list):
+                        for v in val:
+                            lines.append(f"      * {v}")
+                    else:
+                        lines.append(f"      * {val}")
+        else:
+            lines.append("  None")
+            
+        # Print Proficiencies
+        lines.append("Proficiencies:")
+        profs = char_dict.get("Proficiencies", {})
+        # Weapons
+        from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
+        weapon_profs = profs.get('weapons', set())
+        simple_weapons = set()
+        martial_weapons = set()
+        simple_all = False
+        martial_all = False
+        for w in weapon_profs:
+            if w.lower() in ["simple weapons", "all simple weapons", "simple weapon proficiency"]:
+                simple_all = True
+            elif w.lower() in ["martial weapons", "all martial weapons", "martial weapon proficiency"]:
+                martial_all = True
+            elif w in SIMPLE_WEAPONS_DICT:
+                simple_weapons.add(w)
+            elif w in MARTIAL_WEAPONS_DICT:
+                martial_weapons.add(w)
+            else:
+                # If not recognized, just list it under simple for now
+                simple_weapons.add(w)
+        lines.append("  Weapons:")
+        lines.append("    Simple Weapons:")
+        if simple_all:
+            lines.append("      - All")
+        elif simple_weapons:
+            for w in sorted(simple_weapons):
+                lines.append(f"      - {w}")
+        else:
+            lines.append("      - None")
+        lines.append("    Martial Weapons:")
+        if martial_all:
+            lines.append("      - All")
+        elif martial_weapons:
+            for w in sorted(martial_weapons):
+                lines.append(f"      - {w}")
+        else:
+            lines.append("      - None")
+        # Armor
+        armor_profs = profs.get('armor', set())
+        lines.append("  Armor:")
+        if armor_profs:
+            for a in sorted(armor_profs):
+                lines.append(f"    - {a}")
+        else:
+            lines.append("  None")
+        # Tools
+        tool_profs = profs.get('tools', set())
+        if tool_profs:
+            for t in sorted(tool_profs):
+                lines.append(f"  {t}")
+        else:
+            lines.append("  None")
+
         # Print Ability Scores
         lines.append("Ability Scores:")
         abilities = char_dict["Ability Scores"]
@@ -109,6 +192,7 @@ class charGen:
                 lines.append(f"  {subk + ':':<{ability_key_len+3}} {subv} ({mod_str})")
         else:
             lines.append("  None")
+
         # Print Skill Scores
         lines.append("Skill Scores:")
         skills = char_dict["Skill Scores"]
@@ -121,6 +205,7 @@ class charGen:
                 lines.append(f"  {skill + ':':<{skill_key_len+3}} {mod_str}{prof_mark}")
         else:
             lines.append("  None")
+
         # Print Species Traits
         lines.append("Species Traits:")
         traits = char_dict["Species Traits"]
@@ -129,14 +214,39 @@ class charGen:
                 lines.append(f"  - {item}")
         else:
             lines.append("  None")
+
         # Print Inventory
         lines.append("Inventory:")
-        for item in getattr(self, 'inventory', []) or [None]:
-            lines.append(f"  - {item}" if item else "  None")
+        inventory = getattr(self, 'inventory', []) or [None]
+        weapon_mastery = set()
+        if hasattr(self, 'class_special_choices') and self.class_special_choices:
+            # If weapon mastery present, collect mastered weapons
+            for k, v in self.class_special_choices.items():
+                if isinstance(v, list):
+                    for item in v:
+                        weapon_mastery.add(item)
+                elif isinstance(v, str):
+                    weapon_mastery.add(v)
+        for item in inventory:
+            if item:
+                # Mark with (M) if weapon mastery applies
+                base = item.split(' x ')[0] if ' x ' in item else item
+                mark = " (M)" if base in weapon_mastery else ""
+                lines.append(f"  - {item}{mark}")
+            else:
+                lines.append("  None")
+
         # Print Equipment (Weapons/Armor)
         lines.append("Equipment:")
-        for item in getattr(self, 'equipment', []) or [None]:
-            lines.append(f"  - {item}" if item else "  None")
+        equipment = getattr(self, 'equipment', []) or [None]
+        for item in equipment:
+            if item:
+                base = item.split(' x ')[0] if ' x ' in item else item
+                mark = " (M)" if base in weapon_mastery else ""
+                lines.append(f"  - {item}{mark}")
+            else:
+                lines.append("  None")
+
         # Print Currency
         lines.append("Currency:")
         gp = getattr(self, 'gold_pieces', 0)
@@ -153,6 +263,7 @@ class charGen:
             lines.append("  " + ", ".join(currency_line))
         else:
             lines.append("  None")
+
         # Print Spell List
         lines.append("Spell List:")
         known_spells = getattr(self, 'known_spells', {})
@@ -213,6 +324,10 @@ class charGen:
             self.gold_pieces += bg_info.get('gold_pieces', 0)
             self.silver_pieces += bg_info.get('silver_pieces', 0)
             self.copper_pieces += bg_info.get('copper_pieces', 0)
+            # Proficiencies
+            bg_profs = bg_info.get('proficiencies', {})
+            for k in ['weapons', 'armor', 'tools']:
+                self.proficiencies[k].update(bg_profs.get(k, set()))
             # Apply ability score increases
             asi = bg_info.get('Ability Score Increases', {})
             if asi and self.ability_scores:
@@ -228,9 +343,9 @@ class charGen:
         Choose a class for the character using the class selection module.
         Saves the class name, chosen skills, class features, starting equipment, and selected spell to the character instance.
         Also manages the known_spells dictionary, with nested dicts for each spell level ("Cantrips" for level 0).
+        Also saves any special class feature choices (e.g., weapon mastery, divine order) for display.
         """
         already_proficient = getattr(self, 'skills', [])
-        # Pass known_spells to select_class
         known_spells = getattr(self, 'known_spells', {})
         result = select_class(current_level=self.level, already_proficient=already_proficient, known_spells=known_spells)
         if result:
@@ -240,12 +355,40 @@ class charGen:
                 if skill not in self.skills:
                     self.skills.append(skill)
             self.class_features = result['class_features']
+            # Save special class feature choices for display (e.g., weapon mastery, divine order)
+            self.class_special_choices = {}
+            for key in result:
+                # Only include keys that are not standard fields
+                if key not in [
+                    'class_name', 'chosen_skills', 'class_features', 'equipment', 'inventory',
+                    'gold_pieces', 'silver_pieces', 'copper_pieces', 'new_spells', 'proficiencies', 'gained_proficiencies', 'extra_cantrips'
+                ]:
+                    # Map to the feature name if possible
+                    feature_name = key.replace('_', ' ').title()
+                    self.class_special_choices[feature_name] = result[key]
+            # If extra cantrips were granted (e.g. Thaumaturge), add them to known_spells
+            extra_cantrips = result.get('extra_cantrips', [])
+            if extra_cantrips:
+                if not hasattr(self, 'known_spells'):
+                    self.known_spells = {}
+                if 'Cantrips' not in self.known_spells:
+                    self.known_spells['Cantrips'] = {}
+                for spell_name, spell_data in extra_cantrips:
+                    self.known_spells['Cantrips'][spell_name] = spell_data
             # Assign equipment, inventory, and currency
             self.equipment.extend(result.get('equipment', []))
             self.inventory.extend(result.get('inventory', []))
             self.gold_pieces += result.get('gold_pieces', 0)
             self.silver_pieces += result.get('silver_pieces', 0)
             self.copper_pieces += result.get('copper_pieces', 0)
+            # Proficiencies
+            class_profs = result.get('proficiencies', {})
+            for k in ['weapons', 'armor', 'tools']:
+                self.proficiencies[k].update(class_profs.get(k, set()))
+            # Merge any proficiencies gained from class feature choices (e.g. Protector Divine Order)
+            gained_profs = result.get('gained_proficiencies', {})
+            for k in ['weapons', 'armor', 'tools']:
+                self.proficiencies[k].update(gained_profs.get(k, set()))
             # Handle spell selection and known_spells (support multiple spells)
             new_spells = result.get('new_spells')
             if new_spells:
@@ -269,6 +412,10 @@ class charGen:
         if result and isinstance(result, dict):
             self.species = result.get('species', '')
             self.species_traits = result.get('species_traits', {})
+            # Proficiencies
+            species_profs = result.get('proficiencies', {})
+            for k in ['weapons', 'armor', 'tools']:
+                self.proficiencies[k].update(species_profs.get(k, set()))
             # Handle special skill-granting traits
             if hasattr(self, 'skills'):
                 skills_before = set(self.skills)

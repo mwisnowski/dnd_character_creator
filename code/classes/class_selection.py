@@ -3,6 +3,8 @@ from prettytable import PrettyTable
 from InquirerPy import inquirer
 from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS
 from .bard import BARD_CLASS, BARD_LEVELS
+from .cleric import CLERIC_CLASS, CLERIC_LEVELS
+from .class_utils import choose_weapon_mastery, choose_divine_order, choose_extra_cantrip
 from misc.skills import SKILLS_DICT
 from collections import Counter
 import re
@@ -13,6 +15,7 @@ from spells.spells import add_class_spell
 AVAILABLE_CLASSES = {
     'Barbarian': (BARBARIAN_CLASS, BARBARIAN_LEVELS),
     'Bard': (BARD_CLASS, BARD_LEVELS),
+    'Cleric': (CLERIC_CLASS, CLERIC_LEVELS),
 }
 
 def display_class_tables(class_name, class_levels):
@@ -318,9 +321,22 @@ def select_class(current_level=1, already_proficient=None, known_spells=None):
     equipment, inventory, gold_pieces, silver_pieces, copper_pieces = organize_equipment(class_data)
     class_features = []
     new_spells = []
+    extra_choices = {}
+    # Gather proficiencies from class_data
+    proficiencies = {'weapons': set(), 'armor': set(), 'tools': set()}
+    class_profs = class_data.get('proficiencies', {})
+    for k in ['weapons', 'armor', 'tools']:
+        vals = class_profs.get(k, [])
+        if isinstance(vals, str):
+            proficiencies[k].add(vals)
+        else:
+            proficiencies[k].update(vals)
     if current_level in class_levels:
         class_features = class_levels[current_level].get('features', [])
         spellcasting = class_levels[current_level].get('spellcasting')
+        # Handle all class-specific feature choices in class_utils
+        from .class_utils import handle_class_feature_choices
+        extra_choices = handle_class_feature_choices(class_name, class_data, class_features, known_spells)
         if spellcasting:
             new_spells = learn_spell(class_name, spellcasting, known_spells)
     return {
@@ -332,6 +348,8 @@ def select_class(current_level=1, already_proficient=None, known_spells=None):
         'gold_pieces': gold_pieces,
         'silver_pieces': silver_pieces,
         'copper_pieces': copper_pieces,
-        'new_spells': new_spells
+        'new_spells': new_spells,
+        'proficiencies': proficiencies,
+        **extra_choices
     }
 

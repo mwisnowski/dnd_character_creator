@@ -62,9 +62,14 @@ def main():
     print_species_traits(species_name, override_traits=trait_list, trait_desc_overrides=trait_desc_overrides)
     print(f"{final_species_name} selected as species.")
     # Return species and traits for use by caller
+    # Add proficiencies if any species grants them (future-proof, e.g. custom/variant)
+    proficiencies = {'weapons': set(), 'armor': set(), 'tools': set()}
+    # Example: if a trait grants a proficiency, add here (none in default data)
+    # For now, just return empty sets
     return {
         'species': final_species_name,
-        'species_traits': trait_list
+        'species_traits': trait_list,
+        'proficiencies': proficiencies
     }
 
 if __name__ == "__main__":
