@@ -1,5 +1,6 @@
 v 1.00.00 
 06/27/2025
+Branch: main
 - Began project
 - Created general outline of fileand folder structure
 - Began outline of species details
@@ -7,25 +8,30 @@ v 1.00.00
 
 v 1.00.00
 06/30/2025
+Branch: main
 - Added remaining species details
 - Created utility function to pull, interpret, and present species information from the species dictionaries
 - Tied this back to main.py to allow reading of species data. Will later be used to determine species used in character creation
 
 v 1.00.01
 06/30/2025
+Branch: main
 - Added skeletal structure for remainder of steps (i.e. classes, equipment, etc...)
 
 v 1.00.02
 06/30/2025
+Branch: main
 - Added logic for dice rolling and setting ability scores
 - Began character creation, including framework for selecting background, classs, species, and ability scores
 
 v 1.00.02
 06/30/2025
+Branch: main
 - Added background information and selection
 
 v 1.00.03
 07/01/2025
+Branch: main
 - Implemented unified ability and skill score display with proficiency marks
 - Added logic for skill proficiency selection from traits (Keen Senses, Skillful) with user prompts
 - Skill scores will show (X) for proficient skills in character sheet
@@ -36,6 +42,7 @@ v 1.00.03
 
 v 1.00.04
 07/01/2025
+Branch: main
 - Added Bard class information
 - Implemented equipment and inventory management features, grabbing what's granted by both the class and background
 - Added spell databases up through third-level, using per-level modules (cantrips, level1, level2, level3) instead of a single spells_dict.py file
@@ -44,6 +51,7 @@ v 1.00.04
 
 v 1.00.05
 07/02/2025
+Branch: main
 - Project-wide code hygiene and documentation improvements:
   - Added or standardized module-level docstrings for all major Python modules (excluding dictionary-only or empty files)
   - Cleaned up and grouped imports, removing unused imports
@@ -78,6 +86,7 @@ Branch: spells_work
 
 v 1.00.08
 07/02/2025
+Branch: classes_work
 - Unified and robust proficiency handling across class, background, and species:
   - All sources now return a structured proficiencies dict (weapons, armor, tools), which is merged and deduplicated in character creation.
   - Character sheet displays all proficiencies, with weapon types categorized using the weapon dictionaries.
