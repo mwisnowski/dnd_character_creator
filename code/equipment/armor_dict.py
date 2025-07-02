@@ -1,21 +1,21 @@
 from __future__ import annotations
 
 LIGHT_ARMOR_DICT: dict[str, dict] = {
-    'Padded Leather': {
+    'Padded Leather Armor': {
         'ac': 11,
         'strength': 0,
         'stealth': True,
         'weight': 8,
         'cost': 10,
     },
-    'Leather': {
+    'Leather Armor': {
         'ac': 11,
         'strength': 0,
         'stealth': False,
         'weight': 10,
         'cost':10,
     },
-    'Studded Leather': {
+    'Studded Leather Armor': {
         'ac': 12,
         'strength': 0,
         'stealth': False,
@@ -25,7 +25,7 @@ LIGHT_ARMOR_DICT: dict[str, dict] = {
 }
 
 MEDIUM_ARMOR_DICT: dict[str, dict] = {
-    'Hide': {
+    'Hide Armor': {
         'ac': 12,
         'strength': 0,
         'stealth': True,

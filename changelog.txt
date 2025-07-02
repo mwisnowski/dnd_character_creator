@@ -33,3 +33,11 @@ v 1.00.03
 - Added menu-driven class selection using InquirerPy, with prettytable class progression display
 - Modularized class selection logic for future class expansion
 - Added Weapon and Armor dictionaries for later use
+
+v 1.00.04
+07/01/2025
+- Added Bard class information
+- Implemented equipment and inventory management features, grabbing what's granted by both the class and background
+- Added spell databases up through third-level, using per-level modules (cantrips, level1, level2, level3) instead of a single spells_dict.py file
+- spells_dict.py removed as a result
+- Improved spell display formatting for user-friendly output

@@ -125,7 +125,7 @@ SIMPLE_WEAPONS_DICT: dict[str, dict] = {
         'cost': 0.5,
         'weight': 3,
     },
-    'Crossbow, Light': {
+    'Light Crossbow': {
         'type': 'Simple Ranged Weapon',
         'damage': '1d8 piercing',
         'properties': ['Ammunition (range 80/320)', 'Loading', 'Two-Handed'],
@@ -312,7 +312,7 @@ MARTIAL_WEAPONS_DICT: dict[str, dict] = {
         'cost': 10,
         'weight': 1,
     },
-    'Crossbow, Hand': {
+    'Hand Crossbow': {
         'type': 'Martial Ranged Weapon',
         'damage': '1d6 piercing',
         'properties': ['Ammunition (range 30/120)', 'Light', 'Loading'],
@@ -320,7 +320,7 @@ MARTIAL_WEAPONS_DICT: dict[str, dict] = {
         'cost': 75,
         'weight': 3,
     },
-    'Crossbow, Heavy': {
+    'Heavy Crossbow': {
         'type': 'Martial Ranged Weapon',
         'damage': '1d10 piercing',
         'properties': ['Ammunition (range 100/400)', 'Heavy', 'Loading', 'Two-Handed'],
@@ -352,4 +352,37 @@ MARTIAL_WEAPONS_DICT: dict[str, dict] = {
         'cost': 250,
         'weight': 3,
     },
+}
+
+AMMUNITION_DICT: dict[str, dict] = {
+    'Arrow': {
+        'amount': 20,
+        'storage': 'Quiver',
+        'cost': 1,
+        'weight': 1,
+    },
+    'Bolts': {
+        'amount': 20,
+        'storage': 'Case',
+        'cost': 1,
+        'weight': 1,
+    },
+    'Firearm Bullets': {
+        'amount': 10,
+        'storage': 'Pouch',
+        'cost': 3,
+        'weight': 2,
+    },
+    'Needles': {
+        'amount': 50,
+        'storage': 'Pouch',
+        'cost': 1,
+        'weight': 1,
+    },
+    'Sling Bullets': {
+        'amount': 20,
+        'storage': 'Pouch',
+        'cost': .004,
+        'weight': 1,
+    }
 }

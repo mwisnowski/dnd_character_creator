@@ -64,6 +64,11 @@ class charGen:
         self.gender = gender
         self.age = age
         self.proficiency_bonus = get_proficiency_bonus(self.level)
+        self.inventory = []
+        self.equipment = []
+        self.gold_pieces = 0
+        self.silver_pieces = 0
+        self.copper_pieces = 0
 
     def as_dict(self):
         """
@@ -128,6 +133,40 @@ class charGen:
                 lines.append(f"  - {item}")
         else:
             lines.append("  None")
+        # Print Inventory
+        lines.append("Inventory:")
+        inv = getattr(self, 'inventory', [])
+        if inv:
+            for item in inv:
+                lines.append(f"  - {item}")
+        else:
+            lines.append("  None")
+
+        # Print Equipment (Weapons/Armor)
+        lines.append("Equipment:")
+        equip = getattr(self, 'equipment', [])
+        if equip:
+            for item in equip:
+                lines.append(f"  - {item}")
+        else:
+            lines.append("  None")
+
+        # Print Currency
+        lines.append("Currency:")
+        gp = getattr(self, 'gold_pieces', 0)
+        sp = getattr(self, 'silver_pieces', 0)
+        cp = getattr(self, 'copper_pieces', 0)
+        if gp or sp or cp:
+            currency_line = []
+            if gp:
+                currency_line.append(f"{gp} gp")
+            if sp:
+                currency_line.append(f"{sp} sp")
+            if cp:
+                currency_line.append(f"{cp} cp")
+            lines.append("  " + ", ".join(currency_line))
+        else:
+            lines.append("  None")
         return "\n".join(lines)
         
     def make_character(self):
@@ -157,6 +196,7 @@ class charGen:
         Choose a background for the character using the backgrounds selection function.
         Saves the background and its details to the character instance.
         Also saves feat, skills, equipment, and applies ability score increases.
+        Equipment and currency are parsed and merged with the character's inventory and currency.
         """
         bg_info = select_background()
         if bg_info:
@@ -166,8 +206,12 @@ class charGen:
             self.feats = [bg_info.get('Feat')] if bg_info.get('Feat') else []
             # Skills
             self.skills = bg_info.get('Skill Proficiencies', [])
-            # Equipment
-            self.equipment = bg_info.get('Selected Equipment', [])
+            # Equipment and inventory
+            self.equipment.extend(bg_info.get('equipment', []))
+            self.inventory.extend(bg_info.get('inventory', []))
+            self.gold_pieces += bg_info.get('gold_pieces', 0)
+            self.silver_pieces += bg_info.get('silver_pieces', 0)
+            self.copper_pieces += bg_info.get('copper_pieces', 0)
             # Apply ability score increases
             asi = bg_info.get('Ability Score Increases', {})
             if asi and self.ability_scores:
@@ -181,7 +225,7 @@ class charGen:
     def choose_class(self):
         """
         Choose a class for the character using the class selection module.
-        Saves the class name, chosen skills, and class features to the character instance.
+        Saves the class name, chosen skills, class features, and starting equipment to the character instance.
         """
         already_proficient = getattr(self, 'skills', [])
         result = select_class(current_level=self.level, already_proficient=already_proficient)
@@ -192,6 +236,12 @@ class charGen:
                 if skill not in self.skills:
                     self.skills.append(skill)
             self.class_features = result['class_features']
+            # Assign equipment, inventory, and currency
+            self.equipment.extend(result.get('equipment', []))
+            self.inventory.extend(result.get('inventory', []))
+            self.gold_pieces += result.get('gold_pieces', 0)
+            self.silver_pieces += result.get('silver_pieces', 0)
+            self.copper_pieces += result.get('copper_pieces', 0)
             print(f"Class selected: {self.class_name}")
         else:
             print("No class selected.")
