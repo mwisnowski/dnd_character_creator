@@ -24,7 +24,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 2,
             'spells_prepared': 4,
-            'spell_slots': {1: 2}
+            'spells_known': 4,
+            'spell_slots': {'Level 1': 2}
         }
     },
     2: {
@@ -33,7 +34,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 2,
             'spells_prepared': 5,
-            'spell_slots': {1: 3}
+            'spells_known': 5,
+            'spell_slots': {'Level 1': 3}
         }
     },
     3: {
@@ -42,7 +44,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 2,
             'spells_prepared': 6,
-            'spell_slots': {1: 4, 2: 2}
+            'spells_known': 6,
+            'spell_slots': {'Level 1': 4, 'Level 2': 2}
         }
     },
     4: {
@@ -51,7 +54,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 3,
             'spells_prepared': 7,
-            'spell_slots': {1: 4, 2: 3}
+            'spells_known': 7,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3}
         }
     },
     5: {
@@ -60,7 +64,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 3,
             'spells_prepared': 9,
-            'spell_slots': {1: 4, 2: 3, 3: 2}
+            'spells_known': 9,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 2}
         }
     },
     6: {
@@ -69,7 +74,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 3,
             'spells_prepared': 10,
-            'spell_slots': {1: 4, 2: 3, 3: 3}
+            'spells_known': 10,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3}
         }
     },
     7: {
@@ -78,7 +84,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 3,
             'spells_prepared': 11,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 1}
+            'spells_known': 11,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 1}
         }
     },
     8: {
@@ -87,7 +94,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 3,
             'spells_prepared': 12,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 2}
+            'spells_known': 12,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 2}
         }
     },
     9: {
@@ -96,7 +104,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 3,
             'spells_prepared': 14,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 1}
+            'spells_known': 14,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 1}
         }
     },
     10: {
@@ -105,7 +114,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 15,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}
+            'spells_known': 15,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2}
         }
     },
     11: {
@@ -114,7 +124,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 16,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1}
+            'spells_known': 16,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1}
         }
     },
     12: {
@@ -123,7 +134,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 16,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1}
+            'spells_known': 16,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1}
         }
     },
     13: {
@@ -132,7 +144,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 17,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1}
+            'spells_known': 17,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1, 'Level 7': 1}
         }
     },
     14: {
@@ -141,7 +154,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 17,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1}
+            'spells_known': 17,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1, 'Level 7': 1}
         }
     },
     15: {
@@ -150,7 +164,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 18,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1}
+            'spells_known': 18,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1, 'Level 7': 1, 'Level 8': 1}
         }
     },
     16: {
@@ -159,7 +174,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 18,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1}
+            'spells_known': 18,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1, 'Level 7': 1, 'Level 8': 1}
         }
     },
     17: {
@@ -168,7 +184,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 19,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1}
+            'spells_known': 19,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1, 'Level 7': 1, 'Level 8': 1, 'Level 9': 1}
         }
     },
     18: {
@@ -177,7 +194,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 20,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1}
+            'spells_known': 20,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 1, 'Level 7': 1, 'Level 8': 1, 'Level 9': 1}
         }
     },
     19: {
@@ -186,7 +204,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 21,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 2, 7: 1, 8: 1, 9: 1}
+            'spells_known': 21,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 2, 'Level 7': 1, 'Level 8': 1, 'Level 9': 1}
         }
     },
     20: {
@@ -195,7 +214,8 @@ BARD_LEVELS = {
         'spellcasting': {
             'cantrips_known': 4,
             'spells_prepared': 22,
-            'spell_slots': {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 2, 7: 2, 8: 1, 9: 1}
+            'spells_known': 22,
+            'spell_slots': {'Level 1': 4, 'Level 2': 3, 'Level 3': 3, 'Level 4': 3, 'Level 5': 2, 'Level 6': 2, 'Level 7': 2, 'Level 8': 1, 'Level 9': 1}
         }
     }
 }

@@ -52,3 +52,15 @@ v 1.00.05
   - No changes made to dictionary-only or empty modules
 - Refactored ability, skill, and spell logic for clarity and maintainability
 - Ensured all user prompts and spell/ability handling are robust and modular
+
+v 1.00.06
+07/02/2025
+Branch: classes_work
+- Major refactor and documentation improvements for class selection and related logic:
+  - Broke up monolithic class selection into focused helper functions with detailed docstrings
+  - Made class and spellcasting tables dynamic and user-friendly
+  - Ensured declining a class returns to the selection menu
+  - Improved equipment and inventory management logic
+  - Clarified and standardized function and class docstrings throughout the codebase, especially in class selection
+  - Improved helper function naming and documentation for clarity
+- Refactored and modularized class, ability, skill, and spell logic for clarity and maintainability

@@ -5,7 +5,6 @@ Handles ability scores, species, class, background, and skill calculation.
 
 from __future__ import annotations
 
-# Only import what is used
 from misc.abilities import interactive_ability_assignment, ability_modifier
 from misc.backgrounds import select_background
 from misc.skills import calculate_skill_scores
@@ -86,8 +85,8 @@ class charGen:
             "Gender": self.gender,
             "Age": self.age,
             "Ability Scores": self.ability_scores if self.ability_scores else {},
-            "Species Traits": self.species_traits if hasattr(self, 'species_traits') else [],
-            "Skill Scores": self.skill_scores if hasattr(self, 'skill_scores') else {},
+            "Species Traits": getattr(self, 'species_traits', []),
+            "Skill Scores": getattr(self, 'skill_scores', {}),
         }
 
     def __str__(self):
@@ -98,10 +97,7 @@ class charGen:
             "Player Name", "XP", "Gender", "Age"
         ]
         max_key_len = max(len(k) for k in main_keys)
-        lines = []
-        for k in main_keys:
-            v = char_dict[k]
-            lines.append(f"{k + ':':<{max_key_len+2}} {v}")
+        lines = [f"{k + ':':<{max_key_len+2}} {char_dict[k]}" for k in main_keys]
         # Print Ability Scores
         lines.append("Ability Scores:")
         abilities = char_dict["Ability Scores"]
@@ -135,22 +131,12 @@ class charGen:
             lines.append("  None")
         # Print Inventory
         lines.append("Inventory:")
-        inv = getattr(self, 'inventory', [])
-        if inv:
-            for item in inv:
-                lines.append(f"  - {item}")
-        else:
-            lines.append("  None")
-
+        for item in getattr(self, 'inventory', []) or [None]:
+            lines.append(f"  - {item}" if item else "  None")
         # Print Equipment (Weapons/Armor)
         lines.append("Equipment:")
-        equip = getattr(self, 'equipment', [])
-        if equip:
-            for item in equip:
-                lines.append(f"  - {item}")
-        else:
-            lines.append("  None")
-
+        for item in getattr(self, 'equipment', []) or [None]:
+            lines.append(f"  - {item}" if item else "  None")
         # Print Currency
         lines.append("Currency:")
         gp = getattr(self, 'gold_pieces', 0)
