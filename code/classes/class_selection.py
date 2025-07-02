@@ -8,6 +8,7 @@ from collections import Counter
 import re
 from equipment.armor_dict import LIGHT_ARMOR_DICT, MEDIUM_ARMOR_DICT, HEAVY_ARMOR_DICT, SHIELD_DICT
 from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT, AMMUNITION_DICT
+from spells.spells import add_class_spell
 
 AVAILABLE_CLASSES = {
     'Barbarian': (BARBARIAN_CLASS, BARBARIAN_LEVELS),
@@ -231,7 +232,60 @@ def organize_equipment(class_data):
     return equipment, inventory, gold_pieces, silver_pieces, copper_pieces
 
 
-def select_class(current_level=1, already_proficient=None):
+def learn_spell(class_name, spellcasting, known_spells):
+    """
+    Handles the spell learning process for a class at a given level.
+    Prompts the user to select all required cantrips and leveled spells not already known.
+    Returns a list of (spell_level, spell_name, spell_data) for all newly learned spells.
+    """
+    learned_spells = []
+    # Learn cantrips
+    cantrips_to_learn = spellcasting.get('cantrips_known', 0)
+    if cantrips_to_learn:
+        known_cantrips = set(known_spells.get('Cantrips', {}))
+        while len(known_cantrips) < cantrips_to_learn:
+            spell_name, spell_data = add_class_spell(class_name, 0, known_cantrips)
+            if not spell_name:
+                break
+            learned_spells.append((0, spell_name, spell_data))
+            known_cantrips.add(spell_name)
+
+    # Learn leveled spells (use 'spells_known' if present, else 'spells_prepared')
+    spells_to_learn = spellcasting.get('spells_known', spellcasting.get('spells_prepared', 0))
+    if spells_to_learn:
+        # Gather all available spell levels
+        available_levels = []
+        for key in spellcasting.get('spell_slots', {}).keys():
+            try:
+                lvl_num = int(key.split()[-1])
+                available_levels.append(lvl_num)
+            except (ValueError, IndexError):
+                continue
+        available_levels = sorted(set(available_levels))
+        # Gather all known spells across all available levels
+        known_level_spells = set()
+        for lvl in available_levels:
+            known_level_spells.update(known_spells.get(str(lvl), {}))
+        # Loop until the total number of known spells matches spells_to_learn
+        while len(known_level_spells) < spells_to_learn:
+            # Prompt user to pick a spell level
+            level_choices = [str(lvl) for lvl in available_levels]
+            spell_level_str = inquirer.select(
+                message="Select spell level to learn a new spell:",
+                choices=level_choices
+            ).execute()
+            spell_level = int(spell_level_str)
+            # Filter out already known spells at this level
+            known_at_level = set(known_spells.get(str(spell_level), {})) | {name for lvl, name, _ in learned_spells if lvl == spell_level}
+            spell_name, spell_data = add_class_spell(class_name, spell_level, known_at_level)
+            if not spell_name:
+                break
+            learned_spells.append((spell_level, spell_name, spell_data))
+            known_level_spells.add(spell_name)
+    return learned_spells
+
+
+def select_class(current_level=1, already_proficient=None, known_spells=None):
     """
     Main entry point for class selection and setup.
 
@@ -241,6 +295,7 @@ def select_class(current_level=1, already_proficient=None):
     Args:
         current_level (int, optional): The character's starting level. Defaults to 1.
         already_proficient (list, optional): List of skills the character is already proficient in. Defaults to None.
+        known_spells (dict, optional): Dictionary of already known spells by level. Defaults to None.
 
     Returns:
         dict: A dictionary containing the following keys:
@@ -252,15 +307,22 @@ def select_class(current_level=1, already_proficient=None):
             - 'gold_pieces': Number of gold pieces.
             - 'silver_pieces': Number of silver pieces.
             - 'copper_pieces': Number of copper pieces.
+            - 'new_spells': List of (spell_level, spell_name, spell_data) tuples for all newly learned spells.
     """
     if already_proficient is None:
         already_proficient = []
+    if known_spells is None:
+        known_spells = {}
     class_name, class_data, class_levels = choose_class(AVAILABLE_CLASSES)
     chosen_skills = choose_proficiencies(class_data, already_proficient)
     equipment, inventory, gold_pieces, silver_pieces, copper_pieces = organize_equipment(class_data)
     class_features = []
+    new_spells = []
     if current_level in class_levels:
         class_features = class_levels[current_level].get('features', [])
+        spellcasting = class_levels[current_level].get('spellcasting')
+        if spellcasting:
+            new_spells = learn_spell(class_name, spellcasting, known_spells)
     return {
         'class_name': class_name,
         'chosen_skills': chosen_skills,
@@ -269,6 +331,7 @@ def select_class(current_level=1, already_proficient=None):
         'inventory': inventory,
         'gold_pieces': gold_pieces,
         'silver_pieces': silver_pieces,
-        'copper_pieces': copper_pieces
+        'copper_pieces': copper_pieces,
+        'new_spells': new_spells
     }
 

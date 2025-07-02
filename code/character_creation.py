@@ -153,6 +153,21 @@ class charGen:
             lines.append("  " + ", ".join(currency_line))
         else:
             lines.append("  None")
+        # Print Spell List
+        lines.append("Spell List:")
+        known_spells = getattr(self, 'known_spells', {})
+        if known_spells:
+            def level_label(level):
+                if level == 'Cantrips':
+                    return 'Cantrips'
+                else:
+                    return f"Level {level}"
+            for level in sorted(known_spells.keys(), key=lambda x: (x != 'Cantrips', int(x) if x.isdigit() else 0)):
+                lines.append(f"  {level_label(level)}:")
+                for spell in sorted(known_spells[level].keys()):
+                    lines.append(f"    - {spell}")
+        else:
+            lines.append("  None")
         return "\n".join(lines)
         
     def make_character(self):
@@ -211,10 +226,13 @@ class charGen:
     def choose_class(self):
         """
         Choose a class for the character using the class selection module.
-        Saves the class name, chosen skills, class features, and starting equipment to the character instance.
+        Saves the class name, chosen skills, class features, starting equipment, and selected spell to the character instance.
+        Also manages the known_spells dictionary, with nested dicts for each spell level ("Cantrips" for level 0).
         """
         already_proficient = getattr(self, 'skills', [])
-        result = select_class(current_level=self.level, already_proficient=already_proficient)
+        # Pass known_spells to select_class
+        known_spells = getattr(self, 'known_spells', {})
+        result = select_class(current_level=self.level, already_proficient=already_proficient, known_spells=known_spells)
         if result:
             self.class_name = result['class_name']
             # Add chosen class skills to self.skills, avoiding duplicates
@@ -228,6 +246,16 @@ class charGen:
             self.gold_pieces += result.get('gold_pieces', 0)
             self.silver_pieces += result.get('silver_pieces', 0)
             self.copper_pieces += result.get('copper_pieces', 0)
+            # Handle spell selection and known_spells (support multiple spells)
+            new_spells = result.get('new_spells')
+            if new_spells:
+                if not hasattr(self, 'known_spells'):
+                    self.known_spells = {}
+                for spell_level, spell_name, spell_data in new_spells:
+                    level_key = 'Cantrips' if spell_level == 0 else str(spell_level)
+                    if level_key not in self.known_spells:
+                        self.known_spells[level_key] = {}
+                    self.known_spells[level_key][spell_name] = spell_data
             print(f"Class selected: {self.class_name}")
         else:
             print("No class selected.")
