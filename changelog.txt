@@ -64,3 +64,15 @@ Branch: classes_work
   - Clarified and standardized function and class docstrings throughout the codebase, especially in class selection
   - Improved helper function naming and documentation for clarity
 - Refactored and modularized class, ability, skill, and spell logic for clarity and maintainability
+
+v 1.00.07
+07/02/2025
+Branch: classes_work
+- Overhauled spell learning and class selection workflow for modularity and user experience:
+  - Spell selection now supports learning multiple spells per level, as dictated by the class's spellcasting table.
+  - Users can select spells from any available spell level, and the system prevents duplicate selections.
+  - All selected spells are correctly stored and displayed in the character sheet, organized by level.
+  - Refactored spell learning logic to loop for all required cantrips and leveled spells, using the [CLASS]_LEVELS table.
+  - Fixed known_spells handling to support multiple spells and ensure proper display at the end of character creation.
+- General improvements to code modularity, maintainability, and error handling in the class and spell selection modules.
+
