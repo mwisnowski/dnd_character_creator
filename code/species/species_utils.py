@@ -1,9 +1,6 @@
 """
 Utility functions for species data management and display in the D&D character creator project.
-
-This module provides formatted printing of species traits,
-including special handling for trait tables and readable output for the command-line interface.
-It is intended to be imported and used by the main menu and species modules.
+Provides formatted printing of species traits and related helpers for the CLI.
 """
 
 from __future__ import annotations

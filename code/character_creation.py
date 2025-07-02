@@ -1,25 +1,21 @@
-# Core Character Creation Module
+"""
+Core character creation logic for the D&D character creator project.
+Handles ability scores, species, class, background, and skill calculation.
+"""
+
 from __future__ import annotations
 
-from misc.dice_rolling import Dice  # Dependency for abilities
-from misc.abilities import (
-    roll_ability_scores,
-    save_ability_scores,
-    interactive_ability_assignment,
-    ABILITY_NAMES,
-    ability_modifier
-)
-from species.species import main as species_select_main
+# Only import what is used
+from misc.abilities import interactive_ability_assignment, ability_modifier
 from misc.backgrounds import select_background
 from misc.skills import calculate_skill_scores
-from species.species_utils import print_species_traits, handle_special_skill_traits, SPECIES_DATA, traits
+from species.species import main as species_select_main
+from species.species_utils import handle_special_skill_traits
 from classes.class_selection import select_class
 
-PROFICIENCY_BONUS: dict(int, str) = {
+PROFICIENCY_BONUS: dict[str, str] = {
     "<4": "+2",
 }
-
-# Add additional imports as needed for other modules
 
 def get_proficiency_bonus(level: int) -> int:
     """
@@ -38,6 +34,10 @@ def get_proficiency_bonus(level: int) -> int:
         return 2
 
 class charGen:
+    """
+    Character generator class for D&D 5e.
+    Stores all relevant character information and provides methods for creation.
+    """
     def __init__(
         self,
         name: str = "",

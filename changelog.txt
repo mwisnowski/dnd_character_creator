@@ -41,3 +41,14 @@ v 1.00.04
 - Added spell databases up through third-level, using per-level modules (cantrips, level1, level2, level3) instead of a single spells_dict.py file
 - spells_dict.py removed as a result
 - Improved spell display formatting for user-friendly output
+
+v 1.00.05
+07/02/2025
+- Project-wide code hygiene and documentation improvements:
+  - Added or standardized module-level docstrings for all major Python modules (excluding dictionary-only or empty files)
+  - Cleaned up and grouped imports, removing unused imports
+  - Clarified and standardized function and class docstrings throughout the codebase
+  - Improved helper function naming and documentation for clarity
+  - No changes made to dictionary-only or empty modules
+- Refactored ability, skill, and spell logic for clarity and maintainability
+- Ensured all user prompts and spell/ability handling are robust and modular

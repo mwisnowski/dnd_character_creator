@@ -1,3 +1,8 @@
+"""
+D&D 5e backgrounds data and selection utilities.
+Defines BACKGROUND_DICT and related structures for use in character creation.
+"""
+
 from __future__ import annotations
 
 import inquirer

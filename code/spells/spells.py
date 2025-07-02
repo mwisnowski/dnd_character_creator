@@ -1,4 +1,7 @@
-from __future__ import annotations
+"""
+D&D 5e spell list utilities and CLI spell selection.
+Provides functions for prompting and displaying spells by class and level.
+"""
 
 from .cantrips import CANTRIPS_DICT
 from .level1 import FIRST_LEVEL_SPELLS_DICT
@@ -9,6 +12,7 @@ def prompt_and_print_class_spell_list():
     """
     Prompts the user for a class name (using inquirer selection from all unique classes in the spell dictionaries)
     and spell level, then prints a dictionary of spells for that class and level.
+    Uses PrettyTable for formatted output if available.
     """
     import inquirer
     spell_dicts = {

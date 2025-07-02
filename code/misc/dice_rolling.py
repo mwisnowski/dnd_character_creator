@@ -1,4 +1,7 @@
-from __future__ import annotations
+"""
+D&D 5e dice rolling utilities.
+Provides functions and a Dice class for rolling dice, including advantage/disadvantage mechanics.
+"""
 
 import random
 from typing import List
@@ -9,10 +12,10 @@ def roll_die(sides: int) -> int:
     Roll a single die with the specified number of sides.
     
     Args:
-        sides: Number of sides on the die (e.g., 6 for d6, 20 for d20)
+        sides (int): Number of sides on the die (e.g., 6 for d6, 20 for d20)
     
     Returns:
-        Random integer between 1 and sides (inclusive)
+        int: Random integer between 1 and sides (inclusive)
     
     Raises:
         ValueError: If sides is less than 1
@@ -27,12 +30,12 @@ def roll_dice(num_dice: int, sides: int, modifier: int = 0) -> int:
     Roll multiple dice and return the sum plus any modifier.
     
     Args:
-        num_dice: Number of dice to roll
-        sides: Number of sides on each die
-        modifier: Modifier to add to the total (default: 0)
+        num_dice (int): Number of dice to roll
+        sides (int): Number of sides on each die
+        modifier (int): Modifier to add to the total (default: 0)
     
     Returns:
-        Sum of all dice rolls plus modifier
+        int: Sum of all dice rolls plus modifier
     
     Raises:
         ValueError: If num_dice or sides is less than 1
@@ -56,9 +59,9 @@ class Dice:
         Initialize a dice object.
         
         Args:
-            num_dice: Number of dice to roll (default: 1)
-            sides: Number of sides on each die (default: 20)
-            modifier: Modifier to add to rolls (default: 0)
+            num_dice (int): Number of dice to roll (default: 1)
+            sides (int): Number of sides on each die (default: 20)
+            modifier (int): Modifier to add to rolls (default: 0)
         """
         if num_dice < 1:
             raise ValueError("Must have at least 1 die")
@@ -74,17 +77,16 @@ class Dice:
         Roll the dice and return the total.
         
         Returns:
-            Sum of all dice rolls plus modifier
+            int: Sum of all dice rolls plus modifier
         """
         return roll_dice(self.num_dice, self.sides, self.modifier)
     
     def roll_with_advantage(self) -> int:
         """
-        Roll with advantage (roll twice, take higher).
-        Only works with single die rolls.
+        Roll with advantage (roll twice, take higher). Only works with single die rolls.
         
         Returns:
-            Higher of two rolls plus modifier
+            int: Higher of two rolls plus modifier
         
         Raises:
             ValueError: If trying to use advantage with multiple dice
@@ -98,11 +100,10 @@ class Dice:
     
     def roll_with_disadvantage(self) -> int:
         """
-        Roll with disadvantage (roll twice, take lower).
-        Only works with single die rolls.
+        Roll with disadvantage (roll twice, take lower). Only works with single die rolls.
         
         Returns:
-            Lower of two rolls plus modifier
+            int: Lower of two rolls plus modifier
         
         Raises:
             ValueError: If trying to use disadvantage with multiple dice
@@ -116,13 +117,13 @@ class Dice:
     
     def roll_multiple(self, times: int) -> List[int]:
         """
-        Roll the dice multiple times and return all results.
+        Roll the dice multiple times and return all results as a list.
         
         Args:
-            times: Number of times to roll
+            times (int): Number of times to roll the dice
         
         Returns:
-            List of roll results
+            List[int]: List of results for each roll
         """
         return [self.roll() for _ in range(times)]
     

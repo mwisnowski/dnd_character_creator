@@ -1,8 +1,6 @@
 """
 Entry point for the species selection and information display in the D&D character creator project.
-
-This module prompts the user for a species name and prints detailed information about the selected
-species using the print_species_traits utility function. Intended to be called from the main menu.
+Prompts the user for a species and handles lineage/ancestry/legacy selection.
 """
 
 from InquirerPy import inquirer
@@ -10,6 +8,13 @@ from species.species_utils import print_species_traits, SPECIES_DATA, traits
 from species.species_dict import TRAIT_DATA
 
 def main():
+    """
+    Presents a selection menu for species, handles lineage/ancestry/legacy traits,
+    and prints detailed information about the selected species.
+    
+    Returns:
+        dict: Contains the final species name, trait list, and trait description overrides.
+    """
     # Present a selection menu for species instead of text input
     species_choices = list(SPECIES_DATA.keys())
     species_name = inquirer.select(

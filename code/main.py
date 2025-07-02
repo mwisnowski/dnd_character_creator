@@ -1,8 +1,16 @@
-from __future__ import annotations
+"""
+Main entry point for the D&D character creator CLI.
+Presents a menu for species and spell selection, or exit.
+"""
 
 from InquirerPy import inquirer
 
+
 def main():
+    """
+    Main menu loop for the character creator.
+    Allows the user to select between species, spells, or exit.
+    """
     while True:
         choice = inquirer.select(
             message="Main Menu:",
@@ -22,6 +30,7 @@ def main():
         elif choice == "exit":
             print("Goodbye!")
             break
+
 
 if __name__ == "__main__":
     main()

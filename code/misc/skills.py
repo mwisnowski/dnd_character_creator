@@ -1,8 +1,11 @@
-from __future__ import annotations
+"""
+D&D 5e skill definitions and skill score calculation utilities.
+Provides the SKILLS_DICT and functions for calculating skill values.
+"""
 
 from misc.abilities import ability_modifier
 
-SKILLS_DICT: dict[str, str] = {
+SKILLS_DICT: dict[str, dict] = {
     'Acrobatics': {
         'description': 'Stay on your feet in a tricky situation, or perform an acrobatic stunt.',
         'ability': 'Dexterity',
@@ -118,8 +121,12 @@ def calculate_skill_scores(ability_scores: dict, proficiency_bonus: int, skills_
     """
     Calculate skill values for a character.
     Each skill = ability modifier + proficiency bonus (if proficient).
-    skills_list: if provided, only these skills are considered proficient.
-    Returns a dict of skill: (value, is_proficient)
+    Args:
+        ability_scores (dict): Mapping of ability names to scores.
+        proficiency_bonus (int): The character's proficiency bonus.
+        skills_list (list, optional): List of proficient skills. If provided, only these are considered proficient.
+    Returns:
+        dict: Mapping of skill name to (value, is_proficient) tuple.
     """
     skill_scores = {}
     for skill, info in SKILLS_DICT.items():
