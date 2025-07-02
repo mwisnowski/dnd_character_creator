@@ -365,5 +365,25 @@ def select_background() -> dict[str, str | list[str] | list[list[str]]]:
         bg_info['gold_pieces'] = gold_pieces
         bg_info['silver_pieces'] = silver_pieces
         bg_info['copper_pieces'] = copper_pieces
+        # Add proficiencies to return value
+        proficiencies = {'weapons': set(), 'armor': set(), 'tools': set()}
+        # Most backgrounds only grant tool proficiencies
+        tool_profs = bg_info.get('Tool Proficiencies', [])
+        if isinstance(tool_profs, str):
+            proficiencies['tools'].add(tool_profs)
+        elif isinstance(tool_profs, list):
+            proficiencies['tools'].update(tool_profs)
+        # If any background grants weapon/armor profs, add here (future-proof)
+        weapon_profs = bg_info.get('Weapon Proficiencies', [])
+        if isinstance(weapon_profs, str):
+            proficiencies['weapons'].add(weapon_profs)
+        elif isinstance(weapon_profs, list):
+            proficiencies['weapons'].update(weapon_profs)
+        armor_profs = bg_info.get('Armor Proficiencies', [])
+        if isinstance(armor_profs, str):
+            proficiencies['armor'].add(armor_profs)
+        elif isinstance(armor_profs, list):
+            proficiencies['armor'].update(armor_profs)
+        bg_info['proficiencies'] = proficiencies
         return bg_info
 
