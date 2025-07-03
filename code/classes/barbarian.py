@@ -1,6 +1,12 @@
-from __future__ import annotations
+"""
+Barbarian class data for D&D character creator.
+Contains class definition, level progression, features, rage effects, and subclasses.
+"""
 
-BARBARIAN_CLASS = {
+from __future__ import annotations
+from typing import Any, Dict, List, Union
+
+BARBARIAN_CLASS: Dict[str, Any] = {
     'name': 'Barbarian',
     'hit_die': 12,
     'primary_ability': 'Strength',
@@ -15,7 +21,7 @@ BARBARIAN_CLASS = {
                            ['75 GP']]
 }
 
-BARBARIAN_LEVELS = {
+BARBARIAN_LEVELS: Dict[int, Dict[str, Any]] = {
     1: {
         'features': ['Rage', 'Unarmored Defense', 'Weapon Mastery'],
         'rages_per_day': 2,
@@ -138,7 +144,7 @@ BARBARIAN_LEVELS = {
     }
 }
 
-RAGE_EFFECTS = {
+RAGE_EFFECTS: Dict[str, str] = {
     'Damage Resistance': 'You have resistance to bludgeoning, piercing, and slashing damage',
     'Rage Damage': 'When you make an attack using Strength—with either a weapon or an Unarmed Strike—and deal damage to the target, you gain '
     'a bonus to the damage that increases as you gain levels as a Barbarian, as shown in the Rage Damage column of the Barbarian Features table.',
@@ -152,13 +158,13 @@ RAGE_EFFECTS = {
     'Each time the Rage is extended, it lasts until the end of your next turn. You can maintain a Rage for up to 10 minutes.',
 }
 
-BARBARIAN_SUBCLASSES: list = [
+BARBARIAN_SUBCLASSES: List[str] = [
     'Path of the Berserker',
     'Path of the Wild Heart',
     'Path of the World Tree',
     'Path of the Zealot']
 
-PATH_OF_THE_BERSERKER: dict = {
+PATH_OF_THE_BERSERKER: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': 
         'Channel Rage into Violent Fury\n\n'
         'Barbarians who walk the Path of the Berserker direct their Rage primarily toward violence. Their path is one of untrammeled fury, and they '
@@ -190,7 +196,7 @@ PATH_OF_THE_BERSERKER: dict = {
         }      
 }
 
-PATH_OF_THE_WILD_HEART: dict = {
+PATH_OF_THE_WILD_HEART: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': 
         'Walk in Communiiy with the Animal World\n\n'
         'Barbarians who follow the Path of the Wild Heart view themselves as kin to animals. These Barbarians learn magical means to communicate with '
@@ -226,7 +232,7 @@ PATH_OF_THE_WILD_HEART: dict = {
         }      
 }
 
-PATH_OF_THE_WORLD_TREE: dict = {
+PATH_OF_THE_WORLD_TREE: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description':
         'Trace the Roots and Branches of the Multiverse\n\n'
         'Barbarians who follow the Path of the World Tree connect with the cosmic tree Yggdrasil through their Rage. This tree grows among the Outer '
@@ -261,7 +267,7 @@ PATH_OF_THE_WORLD_TREE: dict = {
         } 
 }
 
-PATH_OF_THE_ZEALOT: dict = {
+PATH_OF_THE_ZEALOT: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': 
         'Rage in Ecstatic Union with a God\n\n'
         'Barbarians who walk the Path of the Zealot receive boons from a god or pantheon. These Barbarians experience their Rage as an ecstatic episode of divine '
@@ -300,7 +306,7 @@ PATH_OF_THE_ZEALOT: dict = {
         }      
 }
 
-BARBARIAN_FEATURES: dict = {
+BARBARIAN_FEATURES: Dict[str, Union[str, List[Union[str, Dict[str, str]]]]] = {
     'Rage': ['You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it '
              'as a Bonus Action if you aren\'t wearing Heavy armor.You can enter your Rage the number of times shown for your Barbarian level in '
              'the Rages column of the Barbarian Features table. You regain one expended use when you finish a Short Rest, and you regain all '

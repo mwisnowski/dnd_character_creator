@@ -95,3 +95,17 @@ Branch: classes_work
   - Passing and merging of proficiencies from all sources is now robust and future-proof.
   - All class/domain/feature-based proficiencies and spell choices are now correctly reflected in the character sheet.
   - Refactored code for clarity and maintainability in class_utils and character_creation.
+
+v 1.00.09
+07/03/2025
+Branch: classes_work
+- Druid class and subclasses added and standardized, with full feature and progression tables, type hints, and documentation.
+- Fighter class and subclasses added and standardized, with full feature and progression tables, type hints, and documentation.
+- Bard, Barbarian, and Cleric class data further standardized for consistency (type hints, docstrings, formatting, and feature structure).
+- Skeletal struction for remaining classes added to easily build off of
+- Interactive class feature browser added: rich formatting, navigation, and tree-like back navigation; supports dict/list/string features and renders tables for complex features.
+  - Feature browser will detect subclass features ("Subclass Feature" or any feature ending with "Subclass").
+- Proficiency handling and marking further unified and clarified for equipment, skills, and saving throws; all sources (class, background, species) now merge into a robust, deduplicated structure.
+- Spellcasting ability, modifer, and save DC calcuation added with atuomatic detection from feature descriptions.
+- General improvements to code modularity, maintainability, and user experience in class browsing, feature display, and character sheet output.
+

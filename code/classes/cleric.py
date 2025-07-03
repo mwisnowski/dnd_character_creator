@@ -1,6 +1,12 @@
-from __future__ import annotations
+"""
+Cleric class data for D&D character creator.
+Contains class definition, level progression, features, and subclasses.
+"""
 
-CLERIC_CLASS = {
+from __future__ import annotations
+from typing import Any, Dict, List, Union
+
+CLERIC_CLASS: Dict[str, Any] = {
     'name': 'Cleric',
     'hit_die': 8,
     'primary_ability': 'Wisdom',
@@ -9,7 +15,7 @@ CLERIC_CLASS = {
         'armor': ['Light Armor', 'Medium Armor', 'Shields'],
         'weapons': ['Simple Weapons'],
         'tools': [],
-        'skills': ['Choose 2: History, Insight, Medicine, Persuasion, or Religion']
+        'skills': ['History', 'Insight', 'Medicine', 'Persuasion', 'Religion']
     },
     'starting_equipment': [
         ['Chain Shirt', 'Shield', 'Mace', 'Holy Symbol', "Priest's Pack", '7 GP'],
@@ -17,7 +23,7 @@ CLERIC_CLASS = {
     ]
 }
 
-CLERIC_LEVELS = {
+CLERIC_LEVELS: Dict[int, Dict[str, Any]] = {
     1: {
         'features': ['Spellcasting', 'Divine Order'],
         'spellcasting': {
@@ -219,7 +225,7 @@ CLERIC_LEVELS = {
     },
 }
 
-CLERIC_FEATURES = {
+CLERIC_FEATURES: Dict[str, Any] = {
     'Spellcasting': (
         "You have learned to cast spells through prayer and meditation. See chapter 7 for the rules on spellcasting. "
         "The information below details how you use those rules with Cleric spells, which appear on the Cleric spell list later in the class's description.\n\n"
@@ -303,7 +309,7 @@ CLERIC_FEATURES = {
     ),
 }
 
-LIFE_DOMAIN = {
+LIFE_DOMAIN: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         "Soothe the Hurts of the World\n\n"
         "The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts.\n\n"
@@ -311,7 +317,7 @@ LIFE_DOMAIN = {
     ),
     3: {
         'Disciple of Life': (
-            "When a spell you cast with a spell slot restores Hit Points to a creature, that creature regains additional Hit Points on the turn you cast the spell. The additional Hit Points equal 2 plus the spell slot’s level."
+            "When a spell you cast with a spell slot restores Hit Points to a creature, that creature regains additional Hit Points on the turn you cast the spell. The additional Hit Points equal 2 plus the spell slot's level."
         ),
         'Life Domain Spells': (
             "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Life Domain Spells table, you thereafter always have the listed spells prepared.\n\n"
@@ -323,21 +329,21 @@ LIFE_DOMAIN = {
     },
     6: {
         'Blessed Healer': (
-            "The healing spells you cast on others heal you as well. Immediately after you cast a spell with a spell slot that restores Hit Points to one or more creatures other than yourself, you regain Hit Points equal to 2 plus the spell slot’s level."
+            "The healing spells you cast on others heal you as well. Immediately after you cast a spell with a spell slot that restores Hit Points to one or more creatures other than yourself, you regain Hit Points equal to 2 plus the spell slot's level."
         )
     },
     17: {
         'Supreme Healing': (
-            "When you would normally roll one or more dice to restore Hit Points to a creature with a spell or Channel Divinity, don’t roll those dice for the healing; instead use the highest number possible for each die. For example, instead of restoring 2d6 Hit Points to a creature with a spell, you restore 12."
+            "When you would normally roll one or more dice to restore Hit Points to a creature with a spell or Channel Divinity, don't roll those dice for the healing; instead use the highest number possible for each die. For example, instead of restoring 2d6 Hit Points to a creature with a spell, you restore 12."
         )
     }
 }
 
-LIGHT_DOMAIN = {
+LIGHT_DOMAIN: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         "Bring Light to Banish Darkness\n\n"
-        "The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities’ discerning vision, charged with chasing away lies and burning away darkness.\n\n"
-        "The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal. Some of these gods are identified with the sun or as charioteers who guide the sun across the sky. Others are sentinels who pierce deception. Some are deities of beauty and artistry who teach that art is a vehicle for the soul’s improvement."
+        "The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities' discerning vision, charged with chasing away lies and burning away darkness.\n\n"
+        "The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal. Some of these gods are identified with the sun or as charioteers who guide the sun across the sky. Others are sentinels who pierce deception. Some are deities of beauty and artistry who teach that art is a vehicle for the soul's improvement."
     ),
     3: {
         'Light Domain Spells': (
@@ -363,11 +369,11 @@ LIGHT_DOMAIN = {
     }
 }
 
-TRICKSTER_DOMAIN = {
+TRICKSTER_DOMAIN: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         "Make Mischief and Challenge Authority\n\n"
         "The Trickery Domain offers magic of deception, illusion, and stealth. Clerics who wield this magic are a disruptive force in the world, puncturing pride, mocking tyrants, freeing captives, and flouting hollow traditions. They prefer subterfuge and pranks to direct confrontation.\n\n"
-        "Gods of trickery are mischief-makers and instigators who stand as a constant challenge to the accepted order among both gods and mortals. They embody the forces of change and social upheaval, and they’re patrons of thieves, scoundrels, gamblers, rebels, and liberators. Religious orders that operate in secret, especially those that seek to undermine oppressive governments or hierarchies, also draw on the power of the Trickery Domain."
+        "Gods of trickery are mischief-makers and instigators who stand as a constant challenge to the accepted order among both gods and mortals. They embody the forces of change and social upheaval, and they're patrons of thieves, scoundrels, gamblers, rebels, and liberators. Religious orders that operate in secret, especially those that seek to undermine oppressive governments or hierarchies, also draw on the power of the Trickery Domain."
     ),
     3: {
         'Blessing of the Trickster': (
@@ -378,14 +384,14 @@ TRICKSTER_DOMAIN = {
             "Trickery Domain Spells\nCleric Level  Prepared Spells\n3  Charm Person, Disguise Self, Invisibility, Pass without Trace\n5  Hypnotic Pattern, Nondetection\n7  Confusion, Dimension Door\n9  Dominate Person, Modify Memory"
         ),
         'Invoke Duplicity': (
-            "As a Bonus Action, you can expend one use of your Channel Divinity to create a perfect visual illusion of yourself in an unoccupied space you can see within 30 feet of yourself. The illusion is intangible and doesn’t occupy its space. It lasts for 1 minute, but it ends early if you dismiss it (no action required) or have the Incapacitated condition. The illusion is animated and mimics your expressions and gestures. While it persists, you gain the following benefits.\n\n"
-            "Cast Spells. You can cast spells as though you were in the illusion’s space, but you must use your own senses.\n\n"
+            "As a Bonus Action, you can expend one use of your Channel Divinity to create a perfect visual illusion of yourself in an unoccupied space you can see within 30 feet of yourself. The illusion is intangible and doesn't occupy its space. It lasts for 1 minute, but it ends early if you dismiss it (no action required) or have the Incapacitated condition. The illusion is animated and mimics your expressions and gestures. While it persists, you gain the following benefits.\n\n"
+            "Cast Spells. You can cast spells as though you were in the illusion's space, but you must use your own senses.\n\n"
             "Distract. When both you and your illusion are within 5 feet of a creature that can see the illusion, you have Advantage on attack rolls against that creature, given how distracting the illusion is to the target.\n\n"
             "Move. As a Bonus Action, you can move the illusion up to 30 feet to an unoccupied space you can see that is within 120 feet of yourself."
         )
     },
     6: {
-        "Trickster’s Transposition": (
+        "Trickster's Transposition": (
             "Whenever you take the Bonus Action to create or move the illusion of your Invoke Duplicity, you can teleport, swapping places with the illusion."
         )
     },
@@ -398,7 +404,7 @@ TRICKSTER_DOMAIN = {
     }
 }
 
-WAR_DOMAIN = {
+WAR_DOMAIN: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         "Inspire Valor and Smite Foes\n\n"
         "War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage. Clerics who tap into the magic of the War Domain excel in battle, inspiring others to fight the good fight or offering acts of violence as prayers.\n\n"
@@ -406,7 +412,7 @@ WAR_DOMAIN = {
     ),
     3: {
         'Guided Strike': (
-            "When you or a creature within 30 feet of you misses with an attack roll, you can expend one use of your Channel Divinity and give that roll a +10 bonus, potentially causing it to hit. When you use this feature to benefit another creature’s attack roll, you must take a Reaction to do so."
+            "When you or a creature within 30 feet of you misses with an attack roll, you can expend one use of your Channel Divinity and give that roll a +10 bonus, potentially causing it to hit. When you use this feature to benefit another creature's attack roll, you must take a Reaction to do so."
         ),
         'War Domain Spells': (
             "Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the War Domain Spells table, you thereafter always have the listed spells prepared.\n\n"
@@ -417,8 +423,8 @@ WAR_DOMAIN = {
         )
     },
     6: {
-        "War God’s Blessing": (
-            "You can expend a use of your Channel Divinity to cast Shield of Faith or Spiritual Weapon rather than expending a spell slot. When you cast either spell in this way, the spell doesn’t require Concentration. Instead the spell lasts for 1 minute, but it ends early if you cast that spell again, have the Incapacitated condition, or die."
+        "War God's Blessing": (
+            "You can expend a use of your Channel Divinity to cast Shield of Faith or Spiritual Weapon rather than expending a spell slot. When you cast either spell in this way, the spell doesn't require Concentration. Instead the spell lasts for 1 minute, but it ends early if you cast that spell again, have the Incapacitated condition, or die."
         )
     },
     17: {
