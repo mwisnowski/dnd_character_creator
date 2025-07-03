@@ -184,12 +184,15 @@ class charGen:
         # Print Ability Scores
         lines.append("Ability Scores:")
         abilities = char_dict["Ability Scores"]
+        saving_throw_profs = getattr(self, 'saving_throw_proficiencies', [])
         if abilities:
             ability_key_len = max(len(k) for k in abilities)
             for subk, subv in abilities.items():
                 mod = ability_modifier(subv)
                 mod_str = f"+{mod}" if mod > 0 else str(mod)
-                lines.append(f"  {subk + ':':<{ability_key_len+3}} {subv} ({mod_str})")
+                # Mark saving throw proficiency
+                save_prof = " (P)" if subk in saving_throw_profs else ""
+                lines.append(f"  {subk + ':':<{ability_key_len+3}} {subv} ({mod_str}){save_prof}")
         else:
             lines.append("  None")
 
@@ -201,7 +204,7 @@ class charGen:
             for skill, tup in skills.items():
                 value, proficient = tup if isinstance(tup, tuple) else (tup, False)
                 mod_str = f"+{value}" if value > 0 else str(value)
-                prof_mark = " (X)" if proficient else ""
+                prof_mark = " (P)" if proficient else ""
                 lines.append(f"  {skill + ':':<{skill_key_len+3}} {mod_str}{prof_mark}")
         else:
             lines.append("  None")
@@ -239,10 +242,38 @@ class charGen:
         # Print Equipment (Weapons/Armor)
         lines.append("Equipment:")
         equipment = getattr(self, 'equipment', []) or [None]
+        # Gather proficiencies for quick lookup
+        weapon_profs = self.proficiencies.get('weapons', set())
+        armor_profs = self.proficiencies.get('armor', set())
+        # Import weapon/armor dicts for type checks
+        from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
+        from equipment.armor_dict import LIGHT_ARMOR_DICT, MEDIUM_ARMOR_DICT, HEAVY_ARMOR_DICT, SHIELD_DICT
         for item in equipment:
             if item:
                 base = item.split(' x ')[0] if ' x ' in item else item
-                mark = " (M)" if base in weapon_mastery else ""
+                mark = ""
+                if base in weapon_mastery:
+                    mark += " (M)"
+                # Proficiency check for weapons/armor
+                is_prof = False
+                # Weapon proficiency
+                if (
+                    base in weapon_profs or
+                    ("Simple Weapons" in weapon_profs and base in SIMPLE_WEAPONS_DICT) or
+                    ("Martial Weapons" in weapon_profs and base in MARTIAL_WEAPONS_DICT)
+                ):
+                    is_prof = True
+                # Armor proficiency
+                if (
+                    base in armor_profs or
+                    ("Light Armor" in armor_profs and base in LIGHT_ARMOR_DICT) or
+                    ("Medium Armor" in armor_profs and base in MEDIUM_ARMOR_DICT) or
+                    ("Heavy Armor" in armor_profs and base in HEAVY_ARMOR_DICT) or
+                    ("Shields" in armor_profs and base in SHIELD_DICT)
+                ):
+                    is_prof = True
+                if is_prof:
+                    mark += " (P)"
                 lines.append(f"  - {item}{mark}")
             else:
                 lines.append("  None")
@@ -263,6 +294,18 @@ class charGen:
             lines.append("  " + ", ".join(currency_line))
         else:
             lines.append("  None")
+
+        # Print Spellcasting Info (if applicable)
+        if hasattr(self, 'spellcasting_ability') and self.spellcasting_ability:
+            lines.append("Spellcasting:")
+            lines.append(f"  Ability: {self.spellcasting_ability}")
+            mod = getattr(self, 'spellcasting_modifier', None)
+            if mod is not None:
+                mod_str = f"+{mod}" if mod > 0 else str(mod)
+                lines.append(f"  Modifier: {mod_str}")
+            dc = getattr(self, 'spell_save_dc', None)
+            if dc is not None:
+                lines.append(f"  Save DC: {dc}")
 
         # Print Spell List
         lines.append("Spell List:")
@@ -350,6 +393,20 @@ class charGen:
         result = select_class(current_level=self.level, already_proficient=already_proficient, known_spells=known_spells)
         if result:
             self.class_name = result['class_name']
+            # Save spellcasting ability if present
+            self.spellcasting_ability = result.get('spellcasting_ability')
+            # Save saving throw proficiencies if present
+            self.saving_throw_proficiencies = result.get('saving_throws', [])
+            # Set spellcasting modifier if ability and scores are present
+            if self.spellcasting_ability and self.ability_scores and self.spellcasting_ability in self.ability_scores:
+                self.spellcasting_modifier = ability_modifier(self.ability_scores[self.spellcasting_ability])
+            else:
+                self.spellcasting_modifier = None
+            # Set spell save DC if spellcasting modifier is available
+            if self.spellcasting_modifier is not None:
+                self.spell_save_dc = 8 + self.spellcasting_modifier + self.proficiency_bonus
+            else:
+                self.spell_save_dc = None
             # Add chosen class skills to self.skills, avoiding duplicates
             for skill in result['chosen_skills']:
                 if skill not in self.skills:
@@ -361,7 +418,7 @@ class charGen:
                 # Only include keys that are not standard fields
                 if key not in [
                     'class_name', 'chosen_skills', 'class_features', 'equipment', 'inventory',
-                    'gold_pieces', 'silver_pieces', 'copper_pieces', 'new_spells', 'proficiencies', 'gained_proficiencies', 'extra_cantrips'
+                    'gold_pieces', 'silver_pieces', 'copper_pieces', 'new_spells', 'proficiencies', 'gained_proficiencies', 'extra_cantrips', 'spellcasting_ability'
                 ]:
                     # Map to the feature name if possible
                     feature_name = key.replace('_', ' ').title()

@@ -1,6 +1,12 @@
-from __future__ import annotations
+"""
+Bard class data for D&D character creator.
+Contains class definition, level progression, features, and subclasses.
+"""
 
-BARD_CLASS = {
+from __future__ import annotations
+from typing import Any, Dict, List, Union
+
+BARD_CLASS: Dict[str, Any] = {
     'name': 'Bard',
     'hit_die': 8,
     'primary_ability': 'Charisma',
@@ -17,7 +23,7 @@ BARD_CLASS = {
     ]
 }
 
-BARD_LEVELS = {
+BARD_LEVELS: Dict[int, Dict[str, Any]] = {
     1: {
         'features': ['Bardic Inspiration', 'Spellcasting'],
         'bardic_inspiration_die': 'd6',
@@ -220,7 +226,7 @@ BARD_LEVELS = {
     }
 }
 
-COLLEGE_OF_DANCE = {
+COLLEGE_OF_DANCE: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         'Move in Harmony with the Cosmos\n\n'
         'Bards of the College of Dance know that the Words of Creation can\'t be contained within speech or song; the words are uttered by the '
@@ -262,7 +268,7 @@ COLLEGE_OF_DANCE = {
     }
 }
 
-COLLEGE_OF_GLAMOUR = {
+COLLEGE_OF_GLAMOUR: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         'Weave Beguiling Fey Magic\n\n'
         'The College of Glamour traces its origins to the beguiling magic of the Feywild.\n'
@@ -306,7 +312,7 @@ COLLEGE_OF_GLAMOUR = {
     }
 }
 
-COLLEGE_OF_LORE = {
+COLLEGE_OF_LORE: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         'Plumb the Depths of Magical Knowledge\n\n'
         'Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales.\n'
@@ -340,7 +346,7 @@ COLLEGE_OF_LORE = {
     }
 }
 
-COLLEGE_OF_VALOR = {
+COLLEGE_OF_VALOR: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     'description': (
         'Sing the Deeds of Ancient Heroes\n\n'
         'Bards of the College of Valor are daring storytellers whose tales preserve the memory of the great heroes of the past.\n'
@@ -376,7 +382,7 @@ COLLEGE_OF_VALOR = {
 }
 
 
-BARD_FEATURES = {
+BARD_FEATURES: Dict[Union[str, int], Any] = {
     'Bardic Inspiration': {
         'You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, '
         'which is a d6.\n\n'

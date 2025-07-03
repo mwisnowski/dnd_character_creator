@@ -1,10 +1,12 @@
 from __future__ import annotations
 from prettytable import PrettyTable
 from InquirerPy import inquirer
-from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS
-from .bard import BARD_CLASS, BARD_LEVELS
-from .cleric import CLERIC_CLASS, CLERIC_LEVELS
-from .class_utils import choose_weapon_mastery, choose_divine_order, choose_extra_cantrip
+from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, PATH_OF_THE_BERSERKER, PATH_OF_THE_WILD_HEART, PATH_OF_THE_WORLD_TREE, PATH_OF_THE_ZEALOT
+from .bard import BARD_CLASS, BARD_LEVELS, BARD_FEATURES, COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, COLLEGE_OF_VALOR
+from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
+from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, CIRCLE_OF_THE_STARS
+from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR
+from .class_utils import choose_weapon_mastery, choose_divine_order, choose_extra_cantrip, browse_class_features_prompt
 from misc.skills import SKILLS_DICT
 from collections import Counter
 import re
@@ -13,10 +15,58 @@ from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT, AM
 from spells.spells import add_class_spell
 
 AVAILABLE_CLASSES = {
-    'Barbarian': (BARBARIAN_CLASS, BARBARIAN_LEVELS),
-    'Bard': (BARD_CLASS, BARD_LEVELS),
-    'Cleric': (CLERIC_CLASS, CLERIC_LEVELS),
+    'Barbarian': (BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, {
+        'Path of the Berserker': PATH_OF_THE_BERSERKER,
+        'Path of the Wild Heart': PATH_OF_THE_WILD_HEART,
+        'Path of the World Tree': PATH_OF_THE_WORLD_TREE,
+        'Path of the Zealot': PATH_OF_THE_ZEALOT,
+    }),
+    'Bard': (BARD_CLASS, BARD_LEVELS, BARD_FEATURES, {
+        'College of Dance': COLLEGE_OF_DANCE,
+        'College of Glamour': COLLEGE_OF_GLAMOUR,
+        'College of Lore': COLLEGE_OF_LORE,
+        'College of Valor': COLLEGE_OF_VALOR,
+    }),
+    'Cleric': (CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, {
+        'Life Domain': LIFE_DOMAIN,
+        'Light Domain': LIGHT_DOMAIN,
+        'War Domain': WAR_DOMAIN,
+    }),
+    'Druid': (DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, {
+        'Circle of the Land': CIRCLE_OF_THE_LAND,
+        'Circle of the Moon': CIRCLE_OF_THE_MOON,
+        'Circle of the Sea': CIRCLE_OF_THE_SEA,
+        'Circle of the Stars': CIRCLE_OF_THE_STARS,
+    }),
+    'Fighter': (FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, {
+        'Battle Master': BATTLE_MASTER,
+        'Champion': CHAMPION,
+        'Eldritch Knight': ELDRITCH_KNIGHT,
+        'Psi Warrior': PSI_WARRIOR,
+    }),
 }
+
+def display_eldritch_knight_spellcasting_table():
+    """
+    Display the Eldritch Knight Spellcasting table using PrettyTable.
+    """
+    from .fighter import ELDRITCH_KNIGHT_SPELLCASTING
+    table = PrettyTable()
+    table.field_names = ["Level", "Spells Prepared", "1st", "2nd", "3rd", "4th"]
+    table.align = "l"
+    for lvl in sorted(ELDRITCH_KNIGHT_SPELLCASTING.keys()):
+        row = ELDRITCH_KNIGHT_SPELLCASTING[lvl]
+        table.add_row([
+            lvl,
+            row.get("spells_prepared", "-"),
+            row.get("1st", "-"),
+            row.get("2nd", "-"),
+            row.get("3rd", "-"),
+            row.get("4th", "-")
+        ])
+    print("\nEldritch Knight Spellcasting Table:")
+    print(table)
+
 
 def display_class_tables(class_name, class_levels):
     """
@@ -25,6 +75,7 @@ def display_class_tables(class_name, class_levels):
     This function prints two tables using PrettyTable:
     1. The class progression table, showing level-based features and stats for the class.
     2. If the class has spellcasting, a separate spellcasting table is shown, with spell slot progression and other spell-related info.
+    3. If the class is Fighter and the user selects Eldritch Knight, display the Eldritch Knight spellcasting table when browsing that subclass.
 
     Args:
         class_name (str): The name of the class being displayed.
@@ -73,6 +124,9 @@ def display_class_tables(class_name, class_levels):
                 spellcasting_table.add_row(spell_row)
         print(f"\n{class_name} Spellcasting Table:")
         print(spellcasting_table)
+    # Special: If class is Fighter, also show Eldritch Knight spellcasting table for reference
+    if class_name == 'Fighter':
+        display_eldritch_knight_spellcasting_table()
 
 
 def choose_class(available_classes):
@@ -94,8 +148,10 @@ def choose_class(available_classes):
             message="Select a class:",
             choices=class_choices
         ).execute()
-        class_data, class_levels = available_classes[class_name]
+        class_data, class_levels, class_features, subclass_dicts = available_classes[class_name]
         display_class_tables(class_name, class_levels)
+        # New: Allow browsing features before confirmation
+        browse_class_features_prompt(class_name, class_data, class_levels, class_features, subclass_dicts)
         confirm = inquirer.confirm(
             message=f"Do you want to choose {class_name}?",
             default=True
@@ -322,6 +378,7 @@ def select_class(current_level=1, already_proficient=None, known_spells=None):
     class_features = []
     new_spells = []
     extra_choices = {}
+    spellcasting_ability = None
     # Gather proficiencies from class_data
     proficiencies = {'weapons': set(), 'armor': set(), 'tools': set()}
     class_profs = class_data.get('proficiencies', {})
@@ -331,6 +388,8 @@ def select_class(current_level=1, already_proficient=None, known_spells=None):
             proficiencies[k].add(vals)
         else:
             proficiencies[k].update(vals)
+    # Get saving throw proficiencies
+    saving_throws = class_data.get('saving_throws', [])
     if current_level in class_levels:
         class_features = class_levels[current_level].get('features', [])
         spellcasting = class_levels[current_level].get('spellcasting')
@@ -338,6 +397,19 @@ def select_class(current_level=1, already_proficient=None, known_spells=None):
         from .class_utils import handle_class_feature_choices
         extra_choices = handle_class_feature_choices(class_name, class_data, class_features, known_spells)
         if spellcasting:
+            # Try to extract spellcasting ability from the Spellcasting feature description
+            features_dict = AVAILABLE_CLASSES[class_name][2]
+            spellcasting_desc = features_dict.get('Spellcasting')
+            # Ensure spellcasting_desc is a string for regex
+            if isinstance(spellcasting_desc, (set, list)):
+                # Join all elements if set/list, or just take the first string
+                spellcasting_desc = next((s for s in spellcasting_desc if isinstance(s, str)), None)
+            if isinstance(spellcasting_desc, str):
+                import re
+                # Look for e.g. 'Spellcasting Ability. Wisdom is your spellcasting ability for your Druid spells.'
+                match = re.search(r'Spellcasting Ability\.\s*([A-Za-z]+) is your spellcasting ability', spellcasting_desc)
+                if match:
+                    spellcasting_ability = match.group(1)
             new_spells = learn_spell(class_name, spellcasting, known_spells)
     return {
         'class_name': class_name,
@@ -350,6 +422,8 @@ def select_class(current_level=1, already_proficient=None, known_spells=None):
         'copper_pieces': copper_pieces,
         'new_spells': new_spells,
         'proficiencies': proficiencies,
+        'spellcasting_ability': spellcasting_ability,
+        'saving_throws': saving_throws,
         **extra_choices
     }
 
