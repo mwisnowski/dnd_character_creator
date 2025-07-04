@@ -127,3 +127,11 @@ Branch: classes_work
   - PALADIN_LEVELS table merges class progression and spellcasting, with channel_divinity and spells_known structured for consistency.
   - Paladin integrated into class selection, feature browsing, and character creation workflows, including subclass selection and feature display.
   - All Paladin features and subclasses available for browsing and selection, with formatting and navigation consistent with other classes.
+
+v 1.00.12
+07/04/2025
+Branch: feats_work
+- Origin feats added as dictionary
+- General feats added as dictionary
+- Fighting Style feats added as dictionary
+- Feats still to be implemented in any manner, but their general information is available
