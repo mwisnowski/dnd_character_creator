@@ -6,7 +6,8 @@ from .bard import BARD_CLASS, BARD_LEVELS, BARD_FEATURES, COLLEGE_OF_DANCE, COLL
 from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
 from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, CIRCLE_OF_THE_STARS
 from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR
-from .class_utils import choose_weapon_mastery, choose_divine_order, choose_extra_cantrip, browse_class_features_prompt
+from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
+from .class_utils import browse_class_features_prompt
 from misc.skills import SKILLS_DICT
 from collections import Counter
 import re
@@ -44,6 +45,12 @@ AVAILABLE_CLASSES = {
         'Eldritch Knight': ELDRITCH_KNIGHT,
         'Psi Warrior': PSI_WARRIOR,
     }),
+    'Monk': (MONK_CLASS, MONK_LEVELS, MONK_FEATURES, {
+        'Warrior of Mercy': WARRIOR_OF_MERCY,
+        'Way of Shadow': WAY_OF_SHADOW,
+        'Way of the Elements': WAY_OF_THE_ELEMENTS,
+        'Way of the Open Hand': WAY_OF_THE_OPEN_HAND,
+    }),
 }
 
 def display_eldritch_knight_spellcasting_table():
@@ -76,6 +83,7 @@ def display_class_tables(class_name, class_levels):
     1. The class progression table, showing level-based features and stats for the class.
     2. If the class has spellcasting, a separate spellcasting table is shown, with spell slot progression and other spell-related info.
     3. If the class is Fighter and the user selects Eldritch Knight, display the Eldritch Knight spellcasting table when browsing that subclass.
+    4. If the class is Monk, display the Martial Arts table after the progression table.
 
     Args:
         class_name (str): The name of the class being displayed.
@@ -99,6 +107,7 @@ def display_class_tables(class_name, class_levels):
         table.add_row(row_data)
     print(f"\n{class_name} Progression Table:")
     print(table)
+
     # Spellcasting table
     has_spellcasting = any('spellcasting' in lvl_data for lvl_data in class_levels.values())
     if has_spellcasting:
@@ -124,9 +133,34 @@ def display_class_tables(class_name, class_levels):
                 spellcasting_table.add_row(spell_row)
         print(f"\n{class_name} Spellcasting Table:")
         print(spellcasting_table)
+
     # Special: If class is Fighter, also show Eldritch Knight spellcasting table for reference
     if class_name == 'Fighter':
         display_eldritch_knight_spellcasting_table()
+
+    # Special: If class is Monk, show Martial Arts table
+    if class_name == 'Monk':
+        display_martial_arts_table()
+
+
+# Display the Monk Martial Arts table using PrettyTable
+def display_martial_arts_table():
+    from .monk import MARTIAL_ARTS
+    table = PrettyTable()
+    # Assume MARTIAL_ARTS is a dict with level as key and dict of columns as value
+    # Find all columns
+    all_cols = set()
+    for row in MARTIAL_ARTS.values():
+        all_cols.update(row.keys())
+    columns = ['Level'] + [col for col in sorted(all_cols)]
+    table.field_names = [col.capitalize().replace('_', ' ') for col in columns]
+    table.align = "l"
+    for lvl in sorted(MARTIAL_ARTS.keys()):
+        row = MARTIAL_ARTS[lvl]
+        row_data = [lvl] + [row.get(col, '-') for col in columns[1:]]
+        table.add_row(row_data)
+    print("\nMonk Martial Arts Table:")
+    print(table)
 
 
 def choose_class(available_classes):
