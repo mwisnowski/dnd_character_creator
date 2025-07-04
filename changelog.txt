@@ -109,3 +109,21 @@ Branch: classes_work
 - Spellcasting ability, modifer, and save DC calcuation added with atuomatic detection from feature descriptions.
 - General improvements to code modularity, maintainability, and user experience in class browsing, feature display, and character sheet output.
 
+v 1.00.10
+07/03/2025
+Branch: classes_work
+- Monk class fully implemented:
+  - Complete Monk class data, level progression, and features.
+  - All four Monk subclasses (Warrior of Mercy, Way of Shadow, Way of the Elements, Way of the Open Hand) with features structured for easy browsing and display.
+  - MARTIAL_ARTS table displayed in PrettyTable format, similar to spellcasting tables.
+  - Monk integrated into class selection, feature browsing, and character creation workflows.
+
+v 1.00.11
+07/04/2025
+Branch: classes_work
+- Paladin class fully implemented and integrated:
+  - Complete Paladin class data, level progression, and all major features (Lay On Hands, Spellcasting, Weapon Mastery, Fighting Style, Smite, Channel Divinity, Aura features, etc.).
+  - All four Paladin subclasses (Oath of Devotion, Oath of Glory, Oath of the Ancients, Oath of Vengeance) with full descriptions and level-based features, formatted for easy browsing and display.
+  - PALADIN_LEVELS table merges class progression and spellcasting, with channel_divinity and spells_known structured for consistency.
+  - Paladin integrated into class selection, feature browsing, and character creation workflows, including subclass selection and feature display.
+  - All Paladin features and subclasses available for browsing and selection, with formatting and navigation consistent with other classes.
