@@ -7,6 +7,7 @@ from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, L
 from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, CIRCLE_OF_THE_STARS
 from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR
 from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
+from .paladin import PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, OATH_OF_VENGEANCE
 from .class_utils import browse_class_features_prompt
 from misc.skills import SKILLS_DICT
 from collections import Counter
@@ -50,6 +51,11 @@ AVAILABLE_CLASSES = {
         'Way of Shadow': WAY_OF_SHADOW,
         'Way of the Elements': WAY_OF_THE_ELEMENTS,
         'Way of the Open Hand': WAY_OF_THE_OPEN_HAND,
+    }),
+    'Paladin': (PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, {
+        'Oath of Devotion': OATH_OF_DEVOTION,
+        'Oath of the Ancients': OATH_OF_THE_ANCIENTS,
+        'Oath of Vengeance': OATH_OF_VENGEANCE,
     }),
 }
 

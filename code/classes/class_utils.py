@@ -12,8 +12,8 @@ def handle_class_feature_choices(class_name, class_data, class_features, known_s
     if known_spells is None:
         known_spells = {}
     extra_choices = {}
-    # Barbarian: Weapon Mastery
-    if class_name == 'Barbarian' and 'Weapon Mastery' in class_features:
+    # Barbarian & Paladin: Weapon Mastery
+    if class_name in ('Barbarian', 'Fighter', 'Paladin') and 'Weapon Mastery' in class_features:
         weapon_mastery = choose_weapon_mastery(num_choices=2)
         extra_choices['weapon_mastery'] = weapon_mastery
     # Cleric: Divine Order
