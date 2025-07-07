@@ -5,12 +5,16 @@ Handles ability scores, species, class, background, and skill calculation.
 
 from __future__ import annotations
 
+
 from misc.abilities import interactive_ability_assignment, ability_modifier
 from misc.backgrounds import select_background
 from misc.skills import calculate_skill_scores
+from misc.backgrounds_utils import parse_equipment_items
 from species.species import main as species_select_main
 from species.species_utils import handle_special_skill_traits
 from classes.class_selection import select_class
+from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
+from equipment.armor_dict import LIGHT_ARMOR_DICT, MEDIUM_ARMOR_DICT, HEAVY_ARMOR_DICT, SHIELD_DICT
 
 PROFICIENCY_BONUS: dict[str, str] = {
     "<4": "+2",
@@ -36,6 +40,9 @@ class charGen:
     """
     Character generator class for D&D 5e.
     Stores all relevant character information and provides methods for creation.
+
+    Main output format is via __str__, which prints a detailed character sheet.
+    Use as_dict() for a dictionary representation suitable for export or further processing.
     """
     def __init__(
         self,
@@ -130,7 +137,6 @@ class charGen:
         lines.append("Proficiencies:")
         profs = char_dict.get("Proficiencies", {})
         # Weapons
-        from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
         weapon_profs = profs.get('weapons', set())
         simple_weapons = set()
         martial_weapons = set()
@@ -242,12 +248,8 @@ class charGen:
         # Print Equipment (Weapons/Armor)
         lines.append("Equipment:")
         equipment = getattr(self, 'equipment', []) or [None]
-        # Gather proficiencies for quick lookup
         weapon_profs = self.proficiencies.get('weapons', set())
         armor_profs = self.proficiencies.get('armor', set())
-        # Import weapon/armor dicts for type checks
-        from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
-        from equipment.armor_dict import LIGHT_ARMOR_DICT, MEDIUM_ARMOR_DICT, HEAVY_ARMOR_DICT, SHIELD_DICT
         for item in equipment:
             if item:
                 base = item.split(' x ')[0] if ' x ' in item else item
@@ -346,6 +348,24 @@ class charGen:
         self.player_name = input("What is your, the player's, name?\n> ")
         self.name = input("What is your characters name?\n> ")
     
+    def add_items_from_source(self, source: dict) -> None:
+        """
+        Add equipment, inventory, and currency from a source dict (background, class, etc).
+        Modifies self.equipment, self.inventory, self.gold_pieces, self.silver_pieces, self.copper_pieces in place.
+        """
+        self.equipment.extend(source.get('equipment', []))
+        self.inventory.extend(source.get('inventory', []))
+        self.gold_pieces += source.get('gold_pieces', 0)
+        self.silver_pieces += source.get('silver_pieces', 0)
+        self.copper_pieces += source.get('copper_pieces', 0)
+
+    def merge_proficiencies(self, prof_dict: dict) -> None:
+        """
+        Merge weapon, armor, and tool proficiencies from a dict into self.proficiencies.
+        """
+        for k in ['weapons', 'armor', 'tools']:
+            self.proficiencies[k].update(prof_dict.get(k, set()))
+
     def choose_background(self):
         """
         Choose a background for the character using the backgrounds selection function.
@@ -361,16 +381,10 @@ class charGen:
             self.feats = [bg_info.get('Feat')] if bg_info.get('Feat') else []
             # Skills
             self.skills = bg_info.get('Skill Proficiencies', [])
-            # Equipment and inventory
-            self.equipment.extend(bg_info.get('equipment', []))
-            self.inventory.extend(bg_info.get('inventory', []))
-            self.gold_pieces += bg_info.get('gold_pieces', 0)
-            self.silver_pieces += bg_info.get('silver_pieces', 0)
-            self.copper_pieces += bg_info.get('copper_pieces', 0)
+            # Equipment, inventory, currency
+            self.add_items_from_source(bg_info)
             # Proficiencies
-            bg_profs = bg_info.get('proficiencies', {})
-            for k in ['weapons', 'armor', 'tools']:
-                self.proficiencies[k].update(bg_profs.get(k, set()))
+            self.merge_proficiencies(bg_info.get('proficiencies', {}))
             # Apply ability score increases
             asi = bg_info.get('Ability Score Increases', {})
             if asi and self.ability_scores:
@@ -433,19 +447,11 @@ class charGen:
                 for spell_name, spell_data in extra_cantrips:
                     self.known_spells['Cantrips'][spell_name] = spell_data
             # Assign equipment, inventory, and currency
-            self.equipment.extend(result.get('equipment', []))
-            self.inventory.extend(result.get('inventory', []))
-            self.gold_pieces += result.get('gold_pieces', 0)
-            self.silver_pieces += result.get('silver_pieces', 0)
-            self.copper_pieces += result.get('copper_pieces', 0)
+            self.add_items_from_source(result)
             # Proficiencies
-            class_profs = result.get('proficiencies', {})
-            for k in ['weapons', 'armor', 'tools']:
-                self.proficiencies[k].update(class_profs.get(k, set()))
+            self.merge_proficiencies(result.get('proficiencies', {}))
             # Merge any proficiencies gained from class feature choices (e.g. Protector Divine Order)
-            gained_profs = result.get('gained_proficiencies', {})
-            for k in ['weapons', 'armor', 'tools']:
-                self.proficiencies[k].update(gained_profs.get(k, set()))
+            self.merge_proficiencies(result.get('gained_proficiencies', {}))
             # Handle spell selection and known_spells (support multiple spells)
             new_spells = result.get('new_spells')
             if new_spells:

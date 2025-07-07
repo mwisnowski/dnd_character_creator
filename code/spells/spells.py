@@ -1,13 +1,17 @@
 
+
 """
+spells.py
+---------
 D&D 5e spell list utilities and CLI spell selection.
 Provides functions for prompting and displaying spells by class and level.
+
+Functions:
+    prompt_and_print_class_spell_list(): Prompts for class and level, then displays available spells.
+    add_class_spell(class_name, level, known_spells=None): Prompts user to select a spell for a class/level, excluding already known spells.
 """
 
-from .cantrips import CANTRIPS_DICT
-from .level1 import FIRST_LEVEL_SPELLS_DICT
-from .level2 import SECOND_LEVEL_SPELLS_DICT
-from .level3 import THIRD_LEVEL_SPELLS_DICT
+from .spells_utils import get_spell_dicts, filter_spells_by_class_and_known, print_spell_table
 from InquirerPy import inquirer
 try:
     from prettytable import PrettyTable
@@ -18,15 +22,13 @@ except ImportError:
 def prompt_and_print_class_spell_list():
     """
     Prompts the user for a class name (using inquirer selection from all unique classes in the spell dictionaries)
-    and spell level, then prints a dictionary of spells for that class and level.
+    and spell level, then prints a table of spells for that class and level.
     Uses PrettyTable for formatted output if available.
+
+    Returns:
+        None
     """
-    spell_dicts = {
-        0: CANTRIPS_DICT,
-        1: FIRST_LEVEL_SPELLS_DICT,
-        2: SECOND_LEVEL_SPELLS_DICT,
-        3: THIRD_LEVEL_SPELLS_DICT,
-    }
+    spell_dicts = get_spell_dicts()
     # Collect all unique classes from all spell dictionaries
     all_classes = set()
     for d in spell_dicts.values():
@@ -53,33 +55,15 @@ def prompt_and_print_class_spell_list():
     class_name = answers["class_name"]
     level = answers["level"]
     spells = spell_dicts[level]
-    filtered = {name: data for name, data in spells.items() if class_name in data.get("classes", [])}
+    filtered = filter_spells_by_class_and_known(spells, class_name)
     print(f"\n{class_name} level {level} spell list:")
 
     if not filtered:
         print("No spells found for this class and level.")
         return
 
-    if PrettyTable is None:
-        print("PrettyTable is not installed. Please install it with 'pip install prettytable'.")
-        print(filtered)
-        return
-
-    # Determine columns to show (name, school, casting time, etc. if present)
-    # We'll show: Name, School, Casting Time, Range, Duration, Description (if present)
     columns = ["Name", "School", "Casting Time", "Range", "Duration", "Description"]
-    table = PrettyTable()
-    table.field_names = columns
-    for name, data in filtered.items():
-        table.add_row([
-            name,
-            data.get("school", ""),
-            data.get("casting_time", ""),
-            data.get("range", ""),
-            data.get("duration", ""),
-            (data.get("description", "") or "")[:60] + ("..." if data.get("description") and len(data.get("description")) > 60 else "")
-        ])
-    print(table)
+    print_spell_table(filtered, columns, PrettyTable)
 
 def add_class_spell(class_name, level, known_spells=None):
     """
@@ -95,42 +79,20 @@ def add_class_spell(class_name, level, known_spells=None):
         tuple: (spell_name, spell_data) for the selected spell, or (None, None) if cancelled.
     """
 
+
     if PrettyTable is None:
         print("PrettyTable is not installed. Please install it with 'pip install prettytable'.")
         return None, None
 
-    spell_dicts = {
-        0: CANTRIPS_DICT,
-        1: FIRST_LEVEL_SPELLS_DICT,
-        2: SECOND_LEVEL_SPELLS_DICT,
-        3: THIRD_LEVEL_SPELLS_DICT,
-    }
+    spell_dicts = get_spell_dicts()
     spells = spell_dicts.get(level, {})
-    # Filter for class and not already known
-    if known_spells is None:
-        known_spells = set()
-    else:
-        known_spells = set(known_spells)
-    filtered = {name: data for name, data in spells.items() if class_name in data.get("classes", []) and name not in known_spells}
+    filtered = filter_spells_by_class_and_known(spells, class_name, known_spells)
     if not filtered:
         print("No available spells for this class and level (or all are already known).")
         return None, None
 
-    # Display table
     columns = ["Name", "School", "Casting Time", "Range", "Duration", "Description"]
-    table = PrettyTable()
-    table.field_names = columns
-    table.align = "l"
-    for name, data in filtered.items():
-        table.add_row([
-            name,
-            data.get("school", ""),
-            data.get("casting_time", ""),
-            data.get("range", ""),
-            data.get("duration", ""),
-            (data.get("description", "") or "")[:60] + ("..." if data.get("description") and len(data.get("description")) > 60 else "")
-        ])
-    print(table)
+    print_spell_table(filtered, columns, PrettyTable)
 
     # Inquirer prompt with bottom>top cycling
     spell_choices = list(filtered.keys())
