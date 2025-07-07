@@ -149,3 +149,7 @@ v 1.00.14
 Branch: classes_work
 - Implemented feat addition
 - Implemented adding Fighter FIGHTING_STYLE_FEAT selection
+
+v 1.00.14
+Branch: classes_work
+- Added Ranger class dict, still needs to be implemented
