@@ -384,7 +384,7 @@ def learn_spell(class_name, spellcasting, known_spells):
     return learned_spells
 
 
-def select_class(current_level=1, already_proficient=None, known_spells=None):
+def select_class(current_level=1, already_proficient=None, known_spells=None, character=None):
     """
     Main entry point for class selection and setup.
 
@@ -435,7 +435,7 @@ def select_class(current_level=1, already_proficient=None, known_spells=None):
         spellcasting = class_levels[current_level].get('spellcasting')
         # Handle all class-specific feature choices in class_utils
         from .class_utils import handle_class_feature_choices
-        extra_choices = handle_class_feature_choices(class_name, class_data, class_features, known_spells)
+        extra_choices = handle_class_feature_choices(class_name, class_data, class_features, known_spells, character=character)
         if spellcasting:
             # Try to extract spellcasting ability from the Spellcasting feature description
             features_dict = AVAILABLE_CLASSES[class_name][2]

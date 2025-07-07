@@ -144,3 +144,8 @@ Branch: cleanup_work
 - Removed duplicate imports and put all imports at the top of files
 - Removed duplicate, redundant, or otherwise repeated code, turning into helper functions where appropriate
 - Other general code-hygeine and DRY practices application
+
+v 1.00.14
+Branch: classes_work
+- Implemented feat addition
+- Implemented adding Fighter FIGHTING_STYLE_FEAT selection
