@@ -11,6 +11,8 @@ import textwrap
 # Local imports
 from .species_dict import SPECIES_DATA, TRAIT_DATA, size, speed, traits, description
 from InquirerPy import inquirer
+from misc.skills import SKILLS_DICT
+
 
 def print_species_traits(species_name: str, override_traits: list[str] = None, trait_desc_overrides: dict = None) -> None:
     """
@@ -38,25 +40,14 @@ def print_species_traits(species_name: str, override_traits: list[str] = None, t
     print(f'Description: {species_info.get(description, "No description available")}\n')
     print(f'As a {species_name} you have the following traits:')
     trait_source = override_traits if override_traits is not None else species_info[traits]
-    for trait in trait_source:
-        print(f'Trait: {trait}')
-        # Use override description if provided
-        desc = None
-        if trait_desc_overrides and trait in trait_desc_overrides:
-            desc = trait_desc_overrides[trait]
-        else:
-            desc = TRAIT_DATA.get(trait)
-        # Special case: Dwarves and Orcs have 120 ft Darkvision
-        if (species_name.lower() == "dwarf" or species_name.lower() == 'orc') and trait == "Darkvision":
-            print('  You have Darkvision with a range of 120 feet.\n')
-            continue
+
+    def print_trait_description(trait, desc):
         if desc is None:
             print('  (No description available)')
         elif isinstance(desc, list):
             for item in desc:
                 if isinstance(item, dict):
                     max_key_len = max(len(k.rstrip()) for k in item.keys())
-                    # Special formatting for Draconic Ancestry and similar tables
                     print(f'  {trait}:')
                     for k, v in item.items():
                         k = k + ":"
@@ -64,7 +55,6 @@ def print_species_traits(species_name: str, override_traits: list[str] = None, t
                         trailing_spaces = k[len(key_no_trail):]
                         prefix = f'    {key_no_trail:{max_key_len + 2}}{trailing_spaces}'
                         indent = ' ' * (len(prefix))
-                        # Split on '\n', wrap each line, and preserve explicit newlines with indent
                         lines = str(v).split('\n')
                         for idx, line in enumerate(lines):
                             if line.strip() == '' and idx != len(lines) - 1:
@@ -82,6 +72,15 @@ def print_species_traits(species_name: str, override_traits: list[str] = None, t
                     print(f'  {item.strip()}\n')
         else:
             print(f'  {desc}\n')
+
+    for trait in trait_source:
+        print(f'Trait: {trait}')
+        desc = trait_desc_overrides[trait] if trait_desc_overrides and trait in trait_desc_overrides else TRAIT_DATA.get(trait)
+        # Special case: Dwarves and Orcs have 120 ft Darkvision
+        if (species_name.lower() == "dwarf" or species_name.lower() == 'orc') and trait == "Darkvision":
+            print('  You have Darkvision with a range of 120 feet.\n')
+            continue
+        print_trait_description(trait, desc)
 
 def get_species_traits(species_name: str):
     """
@@ -102,6 +101,8 @@ def get_species_traits(species_name: str):
         return species.get(traits, [])
     return []
 
+
+
 def handle_special_skill_traits(traits: list, current_skills: list) -> list:
     """
     Handle special skill-granting traits like Keen Senses and Skillful.
@@ -120,7 +121,6 @@ def handle_special_skill_traits(traits: list, current_skills: list) -> list:
             current_skills.append(choice)
     # For Skillful
     if "Skillful" in traits:
-        from misc.skills import SKILLS_DICT
         all_skills = list(SKILLS_DICT.keys())
         non_proficient = [s for s in all_skills if s not in current_skills]
         if non_proficient:

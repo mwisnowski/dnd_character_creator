@@ -12,7 +12,7 @@ def handle_class_feature_choices(class_name, class_data, class_features, known_s
     if known_spells is None:
         known_spells = {}
     extra_choices = {}
-    # Barbarian & Paladin: Weapon Mastery
+    # Barbarian, Fighter, & Paladin: Weapon Mastery
     if class_name in ('Barbarian', 'Fighter', 'Paladin') and 'Weapon Mastery' in class_features:
         weapon_mastery = choose_weapon_mastery(num_choices=2)
         extra_choices['weapon_mastery'] = weapon_mastery
@@ -58,6 +58,7 @@ def choose_weapon_mastery(num_choices=2):
     Returns a list of chosen weapon names.
     """
     weapon_choices = list(SIMPLE_WEAPONS_DICT.keys()) + list(MARTIAL_WEAPONS_DICT.keys())
+    weapon_choices = sorted(set(weapon_choices), key=str.lower)
     selected = inquirer.checkbox(
         message=f"Choose {num_choices} weapons for Weapon Mastery:",
         choices=weapon_choices,

@@ -135,3 +135,12 @@ Branch: feats_work
 - General feats added as dictionary
 - Fighting Style feats added as dictionary
 - Feats still to be implemented in any manner, but their general information is available
+
+v 1.00.13
+07/07/2025
+Branch: cleanup_work
+- Fleshed out docstrings
+- Added missing docstrings
+- Removed duplicate imports and put all imports at the top of files
+- Removed duplicate, redundant, or otherwise repeated code, turning into helper functions where appropriate
+- Other general code-hygeine and DRY practices application
