@@ -13,6 +13,7 @@ from misc.backgrounds_utils import parse_equipment_items
 from species.species import main as species_select_main
 from species.species_utils import handle_special_skill_traits
 from classes.class_selection import select_class
+from misc.feats_utils import parse_feat
 from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
 from equipment.armor_dict import LIGHT_ARMOR_DICT, MEDIUM_ARMOR_DICT, HEAVY_ARMOR_DICT, SHIELD_DICT
 
@@ -81,6 +82,8 @@ class charGen:
             'armor': set(),
             'tools': set(),
         }
+        # Feats (always a list of dicts, e.g. {"feat": "Fighting Style", "fighting_style": "Archery"})
+        self.feats = []
 
     def as_dict(self):
         """
@@ -113,6 +116,21 @@ class charGen:
         max_key_len = max(len(k) for k in main_keys)
         lines = [f"{k + ':':<{max_key_len+2}} {char_dict[k]}" for k in main_keys]
 
+        # Print Feats Section
+        lines.append("Feats:")
+        if self.feats:
+            for feat in self.feats:
+                if isinstance(feat, dict):
+                    if feat.get('feat') == 'Fighting Style' and feat.get('fighting_style'):
+                        lines.append(f"  - Fighting Style ({feat['fighting_style']})")
+                    elif feat.get('feat'):
+                        lines.append(f"  - {feat['feat']}")
+                elif isinstance(feat, str):
+                    lines.append(f"  - {feat}")
+        else:
+            lines.append("  None")
+
+        # ...existing code for Class Features, Proficiencies, Ability Scores, etc...
         # Print Class Features
         lines.append("Class Features:")
         class_name = getattr(self, 'class_name', None)
@@ -132,11 +150,11 @@ class charGen:
                         lines.append(f"      * {val}")
         else:
             lines.append("  None")
-            
+
+        # ...existing code for Proficiencies, Ability Scores, etc...
         # Print Proficiencies
-        lines.append("Proficiencies:")
         profs = char_dict.get("Proficiencies", {})
-        # Weapons
+        lines.append("Proficiencies:")
         weapon_profs = profs.get('weapons', set())
         simple_weapons = set()
         martial_weapons = set()
@@ -152,7 +170,6 @@ class charGen:
             elif w in MARTIAL_WEAPONS_DICT:
                 martial_weapons.add(w)
             else:
-                # If not recognized, just list it under simple for now
                 simple_weapons.add(w)
         lines.append("  Weapons:")
         lines.append("    Simple Weapons:")
@@ -171,7 +188,6 @@ class charGen:
                 lines.append(f"      - {w}")
         else:
             lines.append("      - None")
-        # Armor
         armor_profs = profs.get('armor', set())
         lines.append("  Armor:")
         if armor_profs:
@@ -179,7 +195,6 @@ class charGen:
                 lines.append(f"    - {a}")
         else:
             lines.append("  None")
-        # Tools
         tool_profs = profs.get('tools', set())
         if tool_profs:
             for t in sorted(tool_profs):
@@ -187,6 +202,7 @@ class charGen:
         else:
             lines.append("  None")
 
+        # ...existing code for Ability Scores, Skills, Traits, Inventory, Equipment, Currency, Spellcasting, Spell List...
         # Print Ability Scores
         lines.append("Ability Scores:")
         abilities = char_dict["Ability Scores"]
@@ -196,13 +212,11 @@ class charGen:
             for subk, subv in abilities.items():
                 mod = ability_modifier(subv)
                 mod_str = f"+{mod}" if mod > 0 else str(mod)
-                # Mark saving throw proficiency
                 save_prof = " (P)" if subk in saving_throw_profs else ""
                 lines.append(f"  {subk + ':':<{ability_key_len+3}} {subv} ({mod_str}){save_prof}")
         else:
             lines.append("  None")
 
-        # Print Skill Scores
         lines.append("Skill Scores:")
         skills = char_dict["Skill Scores"]
         if skills:
@@ -215,7 +229,6 @@ class charGen:
         else:
             lines.append("  None")
 
-        # Print Species Traits
         lines.append("Species Traits:")
         traits = char_dict["Species Traits"]
         if traits:
@@ -224,12 +237,10 @@ class charGen:
         else:
             lines.append("  None")
 
-        # Print Inventory
         lines.append("Inventory:")
         inventory = getattr(self, 'inventory', []) or [None]
         weapon_mastery = set()
         if hasattr(self, 'class_special_choices') and self.class_special_choices:
-            # If weapon mastery present, collect mastered weapons
             for k, v in self.class_special_choices.items():
                 if isinstance(v, list):
                     for item in v:
@@ -238,14 +249,12 @@ class charGen:
                     weapon_mastery.add(v)
         for item in inventory:
             if item:
-                # Mark with (M) if weapon mastery applies
                 base = item.split(' x ')[0] if ' x ' in item else item
                 mark = " (M)" if base in weapon_mastery else ""
                 lines.append(f"  - {item}{mark}")
             else:
                 lines.append("  None")
 
-        # Print Equipment (Weapons/Armor)
         lines.append("Equipment:")
         equipment = getattr(self, 'equipment', []) or [None]
         weapon_profs = self.proficiencies.get('weapons', set())
@@ -256,16 +265,13 @@ class charGen:
                 mark = ""
                 if base in weapon_mastery:
                     mark += " (M)"
-                # Proficiency check for weapons/armor
                 is_prof = False
-                # Weapon proficiency
                 if (
                     base in weapon_profs or
                     ("Simple Weapons" in weapon_profs and base in SIMPLE_WEAPONS_DICT) or
                     ("Martial Weapons" in weapon_profs and base in MARTIAL_WEAPONS_DICT)
                 ):
                     is_prof = True
-                # Armor proficiency
                 if (
                     base in armor_profs or
                     ("Light Armor" in armor_profs and base in LIGHT_ARMOR_DICT) or
@@ -280,7 +286,6 @@ class charGen:
             else:
                 lines.append("  None")
 
-        # Print Currency
         lines.append("Currency:")
         gp = getattr(self, 'gold_pieces', 0)
         sp = getattr(self, 'silver_pieces', 0)
@@ -297,7 +302,6 @@ class charGen:
         else:
             lines.append("  None")
 
-        # Print Spellcasting Info (if applicable)
         if hasattr(self, 'spellcasting_ability') and self.spellcasting_ability:
             lines.append("Spellcasting:")
             lines.append(f"  Ability: {self.spellcasting_ability}")
@@ -309,7 +313,6 @@ class charGen:
             if dc is not None:
                 lines.append(f"  Save DC: {dc}")
 
-        # Print Spell List
         lines.append("Spell List:")
         known_spells = getattr(self, 'known_spells', {})
         if known_spells:
@@ -378,7 +381,15 @@ class charGen:
             self.background = bg_info.get('Name', '') or next(iter(bg_info.keys()), '')
             self.background_details = bg_info
             # Feat
-            self.feats = [bg_info.get('Feat')] if bg_info.get('Feat') else []
+            self.feats = []
+            if bg_info.get('Feat'):
+                parsed_feat = parse_feat(bg_info['Feat'])
+                if parsed_feat:
+                    # Always store as dict for consistency
+                    if isinstance(parsed_feat, dict):
+                        self.feats.append(parsed_feat)
+                    elif isinstance(parsed_feat, str):
+                        self.feats.append({'feat': parsed_feat})
             # Skills
             self.skills = bg_info.get('Skill Proficiencies', [])
             # Equipment, inventory, currency
@@ -404,7 +415,8 @@ class charGen:
         """
         already_proficient = getattr(self, 'skills', [])
         known_spells = getattr(self, 'known_spells', {})
-        result = select_class(current_level=self.level, already_proficient=already_proficient, known_spells=known_spells)
+        # Pass self as the character instance to select_class so that add_feat can prompt and update feats/fighting_styles
+        result = select_class(current_level=self.level, already_proficient=already_proficient, known_spells=known_spells, character=self)
         if result:
             self.class_name = result['class_name']
             # Save spellcasting ability if present
@@ -429,14 +441,26 @@ class charGen:
             # Save special class feature choices for display (e.g., weapon mastery, divine order)
             self.class_special_choices = {}
             for key in result:
-                # Only include keys that are not standard fields
                 if key not in [
                     'class_name', 'chosen_skills', 'class_features', 'equipment', 'inventory',
-                    'gold_pieces', 'silver_pieces', 'copper_pieces', 'new_spells', 'proficiencies', 'gained_proficiencies', 'extra_cantrips', 'spellcasting_ability'
+                    'gold_pieces', 'silver_pieces', 'copper_pieces', 'new_spells', 'proficiencies', 'gained_proficiencies', 'extra_cantrips', 'spellcasting_ability', 'feats_gained'
                 ]:
-                    # Map to the feature name if possible
                     feature_name = key.replace('_', ' ').title()
                     self.class_special_choices[feature_name] = result[key]
+            # Handle feats from class selection
+            feats_gained = result.get('feats_gained', [])
+            if feats_gained:
+                for feat in feats_gained:
+                    # Always store as dict for consistency
+                    if isinstance(feat, dict):
+                        self.feats.append(feat)
+                    elif isinstance(feat, str):
+                        parsed = parse_feat(feat)
+                        if parsed:
+                            if isinstance(parsed, dict):
+                                self.feats.append(parsed)
+                            elif isinstance(parsed, str):
+                                self.feats.append({'feat': parsed})
             # If extra cantrips were granted (e.g. Thaumaturge), add them to known_spells
             extra_cantrips = result.get('extra_cantrips', [])
             if extra_cantrips:

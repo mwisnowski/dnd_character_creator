@@ -1,9 +1,11 @@
+from misc.feats_utils import add_feat
+from misc.feats import FIGHTING_STYLE_FEATS
 from InquirerPy import inquirer
 from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
 from spells.spells import add_class_spell
 from prettytable import PrettyTable, ALL
 
-def handle_class_feature_choices(class_name, class_data, class_features, known_spells=None):
+def handle_class_feature_choices(class_name, class_data, class_features, known_spells=None, character=None):
     """
     Handles class-specific feature choices and assignments (e.g., Weapon Mastery, Divine Order).
     Modifies class_data and known_spells in-place as needed.
@@ -46,6 +48,27 @@ def handle_class_feature_choices(class_name, class_data, class_features, known_s
         }
         feature_desc = DRUID_FEATURES.get('Primal Order', '')
         handle_order_feature(class_name, class_data, known_spells, extra_choices, 'Primal Order', options, feature_desc)
+    feats_gained = []
+    # Fighter: Fighting Style feat
+    if class_name == 'Fighter' and any("Fighting Style" in f for f in class_features):
+        # Determine currently known fighting styles (if any)
+        known_styles = set()
+        # Try to get from class_data or extra_choices if present
+        if 'fighting_styles' in class_data and class_data['fighting_styles']:
+            known_styles.update(class_data['fighting_styles'])
+        elif 'fighting_styles' in extra_choices and extra_choices['fighting_styles']:
+            known_styles.update(extra_choices['fighting_styles'])
+        # FIGHTING_STYLE_FEATS is a dict: keys are style names
+        available_fighting_styles = [style for style in FIGHTING_STYLE_FEATS.keys() if style not in known_styles]
+        feat_result = add_feat(
+            character=character,  # Pass character instance for proper feat handling
+            feat_name='Fighting Style',
+            available_fighting_styles=available_fighting_styles
+        )
+        if feat_result and isinstance(feat_result, dict) and feat_result.get('feat') == 'Fighting Style' and feat_result.get('fighting_style'):
+            feats_gained.append(feat_result)
+    if feats_gained:
+        extra_choices['feats_gained'] = feats_gained
     return extra_choices
 
 """
