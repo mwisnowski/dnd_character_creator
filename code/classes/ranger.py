@@ -30,6 +30,7 @@ RANGER_CLASS: Dict[str, Any] = {
         ['150 GP']
     ]
 }
+
 RANGER_LEVELS: Dict[int, Dict[str, Any]] = {
     1: {
         'proficiency_bonus': 2,
@@ -232,6 +233,7 @@ RANGER_LEVELS: Dict[int, Dict[str, Any]] = {
         }
     }
 }
+
 RANGER_FEATURES: Dict[str, Any] = {
     'Spellcasting': (
         "You have learned to channel the magical essence of nature to cast spells. See Chapter 7 for the rules on Spellcasting. The Information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class's description.\n\n"
@@ -567,39 +569,3 @@ HUNTER: Dict[Union[str, int], Any] = {
         )
     }
 }
-
-# Hunter subclass dictionary
-HUNTER: Dict[Union[str, int], Any] = {
-    'description': (
-        "Protect Nature and People from Destruction\n\n"
-        "You stalk prey in the wilds and elsewhere, using your abilities as a Hunter to protect nature and people everywhere from forces that would destroy them."
-    ),
-    3: {
-        "Hunter's Lore": (
-            "You can call upon the forces of nature to reveal certain strengths and weaknesses of your prey. While a creature is marked by your Hunter's Mark, you know whether the creature has any Immunities, Resistances, or Vulnerabilities, and if the creature has any, you know what they are."
-        ),
-        "Hunter's Prey": (
-            "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\n\n"
-            "Colossus Slayer. Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it's missing any of its Hit Points. You can deal this extra damage only once per turn.\n\n"
-            "Horde Breaker. Once on each of your turns when you make an attack with a weapon, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target, that is within the weapon's range, and that you haven't attacked this turn."
-        )
-    },
-    7: {
-        "Defensive Tactics": (
-            "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\n\n"
-            "Escape the Horde. Opportunity Attacks have Disadvantage against you.\n\n"
-            "Multiattack Defense. When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn."
-        )
-    },
-    11: {
-        "Superior Hunter's Prey": (
-            "Once per turn when you deal damage to a creature marked by your Hunter's Mark, you can also deal that spell's extra damage to a different creature that you can see within 30 feet of the first creature."
-        )
-    },
-    15: {
-        "Superior Hunter's Defense": (
-            "When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn."
-        )
-    }
-}
-

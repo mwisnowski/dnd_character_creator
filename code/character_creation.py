@@ -486,6 +486,7 @@ class charGen:
                     if level_key not in self.known_spells:
                         self.known_spells[level_key] = {}
                     self.known_spells[level_key][spell_name] = spell_data
+            
             print(f"Class selected: {self.class_name}")
         else:
             print("No class selected.")
