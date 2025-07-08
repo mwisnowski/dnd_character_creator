@@ -19,7 +19,7 @@ from prettytable import PrettyTable
 from InquirerPy import inquirer
 
 # Local imports
-from .class_utils import AVAILABLE_CLASSES, browse_class_features_prompt, display_table, display_class_tables
+from .class_utils import AVAILABLE_CLASSES, browse_class_features_prompt, display_table, display_class_tables, handle_class_feature_spells
 from misc.skills import SKILLS_DICT
 from equipment.armor_dict import LIGHT_ARMOR_DICT, MEDIUM_ARMOR_DICT, HEAVY_ARMOR_DICT, SHIELD_DICT
 from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT, AMMUNITION_DICT
@@ -184,24 +184,31 @@ def organize_equipment(class_data):
         equipment = [f"{name} x {count}" if count > 1 else name for name, count in equip_counter.items()]
     return equipment, inventory, gold_pieces, silver_pieces, copper_pieces
 
-def learn_spell(class_name, spellcasting, known_spells):
+def learn_spell(class_name, spellcasting, known_spells, class_feature_spells=None):
     """
     Handles the spell learning process for a class at a given level.
-    Prompts the user to select all required cantrips and leveled spells not already known.
+    Prompts the user to select all required cantrips and leveled spells not already known or granted by features.
     Returns a list of (spell_level, spell_name, spell_data) for all newly learned spells.
     """
     learned_spells = []
+    # Prepare set of feature-granted spells for each level
+    feature_spells_by_level = {}
+    if class_feature_spells:
+        for lvl, spells in class_feature_spells.items():
+            feature_spells_by_level[str(lvl)] = set(spells.keys())
+            if str(lvl) == '0':
+                feature_spells_by_level['Cantrips'] = set(spells.keys())
     # Learn cantrips
     cantrips_to_learn = spellcasting.get('cantrips_known', 0)
     if cantrips_to_learn:
         known_cantrips = set(known_spells.get('Cantrips', {}))
+        exclude_cantrips = feature_spells_by_level.get('Cantrips', set())
         while len(known_cantrips) < cantrips_to_learn:
-            spell_name, spell_data = add_class_spell(class_name, 0, known_cantrips)
+            spell_name, spell_data = add_class_spell(class_name, 0, known_cantrips, exclude_cantrips)
             if not spell_name:
                 break
             learned_spells.append((0, spell_name, spell_data))
             known_cantrips.add(spell_name)
-
     # Learn leveled spells (use 'spells_known' if present, else 'spells_prepared')
     spells_to_learn = spellcasting.get('spells_known', spellcasting.get('spells_prepared', 0))
     if spells_to_learn:
@@ -227,9 +234,10 @@ def learn_spell(class_name, spellcasting, known_spells):
                 choices=level_choices
             ).execute()
             spell_level = int(spell_level_str)
-            # Filter out already known spells at this level
+            # Filter out already known spells at this level and feature-granted spells
             known_at_level = set(known_spells.get(str(spell_level), {})) | {name for lvl, name, _ in learned_spells if lvl == spell_level}
-            spell_name, spell_data = add_class_spell(class_name, spell_level, known_at_level)
+            exclude_at_level = feature_spells_by_level.get(str(spell_level), set())
+            spell_name, spell_data = add_class_spell(class_name, spell_level, known_at_level, exclude_at_level)
             if not spell_name:
                 break
             learned_spells.append((spell_level, spell_name, spell_data))
@@ -267,7 +275,7 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
     class_name, class_data, class_levels = choose_class(AVAILABLE_CLASSES)
     chosen_skills = choose_proficiencies(class_data, already_proficient)
     equipment, inventory, gold_pieces, silver_pieces, copper_pieces = organize_equipment(class_data)
-    class_features = []
+    class_features = class_levels[current_level].get('features', [])
     new_spells = []
     extra_choices = {}
     spellcasting_ability = None
@@ -283,8 +291,11 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
     # Get saving throw proficiencies
     saving_throws = class_data.get('saving_throws', [])
 
+    # Handle class feature-granted spells (e.g., Ranger's Favored Enemy)
+    class_feature_spells = handle_class_feature_spells(class_name, class_data, class_features)
+
+    # Spellcasting feature spel llearning
     if current_level in class_levels:
-        class_features = class_levels[current_level].get('features', [])
         spellcasting = class_levels[current_level].get('spellcasting')
         # Handle all class-specific feature choices in class_utils
         from .class_utils import handle_class_feature_choices
@@ -297,12 +308,11 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
             if isinstance(spellcasting_desc, (set, list)):
                 spellcasting_desc = next((s for s in spellcasting_desc if isinstance(s, str)), None)
             if isinstance(spellcasting_desc, str):
-                import re
                 match = re.search(r'Spellcasting Ability\.\s*([A-Za-z]+) is your spellcasting ability', spellcasting_desc)
                 if match:
                     spellcasting_ability = match.group(1)
             # Use known_spells only
-            new_spells = learn_spell(class_name, spellcasting, known_spells)
+            new_spells = learn_spell(class_name, spellcasting, known_spells, class_feature_spells)
     return {
         'class_name': class_name,
         'chosen_skills': chosen_skills,
@@ -316,5 +326,6 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
         'proficiencies': proficiencies,
         'spellcasting_ability': spellcasting_ability,
         'saving_throws': saving_throws,
+        'class_feature_spells': class_feature_spells,
         **extra_choices
     }

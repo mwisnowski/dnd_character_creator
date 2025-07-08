@@ -1,9 +1,17 @@
+"""
+Class utilities for the D&D character creator.
+Handles class-specific feature choices, class and subclass browsing UI, table display utilities, and integration with spell, feat, and equipment logic.
+"""
+
+# 3rd-party imports
+from InquirerPy import inquirer
+from prettytable import PrettyTable, ALL
+
+# Local imports
 from misc.feats_utils import add_feat
 from misc.feats import FIGHTING_STYLE_FEATS
-from InquirerPy import inquirer
 from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
 from spells.spells import add_class_spell
-from prettytable import PrettyTable, ALL
 from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, PATH_OF_THE_BERSERKER, PATH_OF_THE_WILD_HEART, PATH_OF_THE_WORLD_TREE, PATH_OF_THE_ZEALOT
 from .bard import BARD_CLASS, BARD_LEVELS, BARD_FEATURES, COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, COLLEGE_OF_VALOR
 from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
@@ -11,7 +19,7 @@ from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND
 from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR
 from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
 from .paladin import PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, OATH_OF_VENGEANCE
-from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA, BEAST_OF_THE_SKY, BEAST_MASTER, FEYWILD_GIFTS, FEY_WANDERER, GLOOM_STALKER, HUNTER
+from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER
 
 # --- AVAILABLE_CLASSES: Central registry of all supported D&D classes and their data ---
 AVAILABLE_CLASSES = {
@@ -56,11 +64,7 @@ AVAILABLE_CLASSES = {
         'Oath of Vengeance': OATH_OF_VENGEANCE,
     }),
     'Ranger': (RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, {
-        'Beast of the Land': BEAST_OF_THE_LAND,
-        'Beast of the Sea': BEAST_OF_THE_SEA,
-        'Beast of the Sky': BEAST_OF_THE_SKY,
         'Beast Master': BEAST_MASTER,
-        'Feywild Gifts': FEYWILD_GIFTS,
         'Fey Wanderer': FEY_WANDERER,
         'Gloom Stalker': GLOOM_STALKER,
         'Hunter': HUNTER,
@@ -220,6 +224,25 @@ def handle_order_feature(class_name, class_data, known_spells, extra_choices, fe
                 extra_choices['extra_cantrips'] = []
             extra_choices['extra_cantrips'].append((spell_name, spell_data))
 
+def handle_class_feature_spells(class_name, class_data, class_features):
+    """
+    Returns a dictionary of spells granted by class features (not chosen by the user).
+    Example: Ranger's Favored Enemy grants Hunter's Mark at level 1.
+    Returns: {level: {spell_name: spell_data}}
+    """
+    from spells.spells_utils import get_spell_dicts
+    feature_spells = {}
+    # Example: Ranger - Favored Enemy grants Hunter's Mark at level 1
+    if class_name == 'Ranger' and 'Favored Enemy' in class_features:
+        spell_dicts = get_spell_dicts()
+        # Hunter's Mark is a 1st-level spell
+        spell_name = "Hunter's Mark"
+        spell_data = spell_dicts[1].get(spell_name)
+        if spell_data:
+            feature_spells.setdefault(1, {})[spell_name] = spell_data
+    # Add more class/feature spell grants here as needed
+    return feature_spells
+
 def display_table(data, title=None, columns=None, field_name_map=None, special_formatters=None):
     """
     Generic PrettyTable display for a list/dict of dicts.
@@ -314,7 +337,6 @@ def display_eldritch_knight_spellcasting_table():
     Display the Eldritch Knight Spellcasting table using PrettyTable.
     """
     from .fighter import ELDRITCH_KNIGHT_SPELLCASTING
-    from prettytable import PrettyTable
     table = PrettyTable()
     table.field_names = ["Level", "Spells Prepared", "1st", "2nd", "3rd", "4th"]
     table.align = "l"

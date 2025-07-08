@@ -153,3 +153,11 @@ Branch: classes_work
 v 1.00.14
 Branch: classes_work
 - Added Ranger class dict, still needs to be implemented
+
+v 1.00.15
+Branch: classes_work
+- Implemented Ranger class in class_selection
+- Setup printing of Beast Master Primal Companion
+- Setup framework for adding spells granted by class features (i.e. Favored Enemy granting Hunter's Mark)
+  - Made it so these spells don't show in spell selection
+  - Added to spells_known printout of character sheet

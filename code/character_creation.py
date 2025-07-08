@@ -314,16 +314,27 @@ class charGen:
                 lines.append(f"  Save DC: {dc}")
 
         lines.append("Spell List:")
+        # Combine known_spells and class_feature_spells for display
         known_spells = getattr(self, 'known_spells', {})
-        if known_spells:
+        feature_spells = getattr(self, 'class_feature_spells', {})
+        # Merge both dicts into a new dict for display
+        combined_spells = {}
+        # Add known_spells
+        for level, spells in (known_spells or {}).items():
+            combined_spells.setdefault(level, {}).update(spells)
+        # Add feature_spells (convert int keys to str for consistency)
+        for level, spells in (feature_spells or {}).items():
+            level_key = 'Cantrips' if str(level) == '0' else str(level)
+            combined_spells.setdefault(level_key, {}).update(spells)
+        if combined_spells:
             def level_label(level):
                 if level == 'Cantrips':
                     return 'Cantrips'
                 else:
                     return f"Level {level}"
-            for level in sorted(known_spells.keys(), key=lambda x: (x != 'Cantrips', int(x) if x.isdigit() else 0)):
+            for level in sorted(combined_spells.keys(), key=lambda x: (x != 'Cantrips', int(x) if x.isdigit() else 0)):
                 lines.append(f"  {level_label(level)}:")
-                for spell in sorted(known_spells[level].keys()):
+                for spell in sorted(combined_spells[level].keys()):
                     lines.append(f"    - {spell}")
         else:
             lines.append("  None")
@@ -443,7 +454,7 @@ class charGen:
             for key in result:
                 if key not in [
                     'class_name', 'chosen_skills', 'class_features', 'equipment', 'inventory',
-                    'gold_pieces', 'silver_pieces', 'copper_pieces', 'new_spells', 'proficiencies', 'gained_proficiencies', 'extra_cantrips', 'spellcasting_ability', 'feats_gained'
+                    'gold_pieces', 'silver_pieces', 'copper_pieces', 'new_spells', 'proficiencies', 'gained_proficiencies', 'extra_cantrips', 'spellcasting_ability', 'feats_gained', 'class_feature_spells'
                 ]:
                     feature_name = key.replace('_', ' ').title()
                     self.class_special_choices[feature_name] = result[key]
@@ -486,7 +497,8 @@ class charGen:
                     if level_key not in self.known_spells:
                         self.known_spells[level_key] = {}
                     self.known_spells[level_key][spell_name] = spell_data
-            
+            # Store class feature-granted spells
+            self.class_feature_spells = result.get('class_feature_spells', {})
             print(f"Class selected: {self.class_name}")
         else:
             print("No class selected.")
