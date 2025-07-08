@@ -30,6 +30,7 @@ RANGER_CLASS: Dict[str, Any] = {
         ['150 GP']
     ]
 }
+
 RANGER_LEVELS: Dict[int, Dict[str, Any]] = {
     1: {
         'proficiency_bonus': 2,
@@ -232,6 +233,7 @@ RANGER_LEVELS: Dict[int, Dict[str, Any]] = {
         }
     }
 }
+
 RANGER_FEATURES: Dict[str, Any] = {
     'Spellcasting': (
         "You have learned to channel the magical essence of nature to cast spells. See Chapter 7 for the rules on Spellcasting. The Information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class's description.\n\n"
@@ -418,13 +420,16 @@ BEAST_MASTER: Dict[Union[str, int], Any] = {
         "A Beast Master forms a mystical bond with a special animal, drawing on primal magic and a deep connection to the natural world."
     ),
     3: {
-        'Primal Companion': (
+        'Primal Companion': [
             "You magically summon a primal beast, which draws strength from your bond with nature. Choose its stat block: Beast of the Land, Beast of the Sea or Beast of the Sky. You also determine the kind of animal it is, choosing a kind appropriate for the stat block. Whatever beast you choose, it bears primal markings indicating its supernatural origin.\n\n"
             "  - The Beast in Combat. In combat, the beast acts during your turn. It can move and use its Reaction on its own, but the only action it takes is the Dodge action unless you take a Bonus Action to command it to take an action in its stat block or some other action. You can also sacrifice one of your attacks when you take the Attack action to command the beast to take the Beast's Strike action. If you have the Incapacitated condition, the beast acts on its own and isn't limited to the Dodge action.\n\n"
             "  - Restoring or Replacing the Beast. If the beast has died within the last hour, you can take a Magic action to touch it and expend a spell slot. The beast returns to life after 1 minute with all its Hit Points restored.\n\n"
-            "Whenever you finish a Long Rest, you can summon a different primal beast, which appears in an unoccupied space within 5 feet of you. You choose its stat block and appearance. If you already have a beast from this feature, the old one vanishes when the new one appears."
-        )
-    },
+            "Whenever you finish a Long Rest, you can summon a different primal beast, which appears in an unoccupied space within 5 feet of you. You choose its stat block and appearance. If you already have a beast from this feature, the old one vanishes when the new one appears.",
+            BEAST_OF_THE_LAND,
+            BEAST_OF_THE_SEA,
+            BEAST_OF_THE_SKY
+            ]
+        },
     7: {
         'Exceptional Training': (
             "When you take a Bonus Action to command your Primal Companion beast to take an action, you can also command it to take the Dash, Disengage, Dodge, or Help action using its Bonus Action.\n\n"
@@ -466,9 +471,10 @@ FEY_WANDERER: Dict[Union[str, int], Any] = {
             "When you reach a Ranger level specified in the Fey Wanderer spells table, you thereafter always have the listed spells prepared.\n\n"
             "Fey Wanderer Spells\nRanger Level  Spell\n3  Charm Person\n5  Misty Step\n9  Summon Fey\n13 Dimension Door\n17 Mislead"
         ),
-        'Feywild Gift': (
-            "You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly."
-        ),
+        'Feywild Gift': [
+            "You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly.",
+            FEYWILD_GIFTS
+        ],
         'Otherworldly Glamour': (
             "Whenever you make a Charisma check, you gain a bonus to the check equal to your Wisdom modifier (Minimum of +1).\n\n"
             "You also gain proficiency in one of these skills of your choice: Deception, Performance, or Persuasion."
@@ -567,39 +573,3 @@ HUNTER: Dict[Union[str, int], Any] = {
         )
     }
 }
-
-# Hunter subclass dictionary
-HUNTER: Dict[Union[str, int], Any] = {
-    'description': (
-        "Protect Nature and People from Destruction\n\n"
-        "You stalk prey in the wilds and elsewhere, using your abilities as a Hunter to protect nature and people everywhere from forces that would destroy them."
-    ),
-    3: {
-        "Hunter's Lore": (
-            "You can call upon the forces of nature to reveal certain strengths and weaknesses of your prey. While a creature is marked by your Hunter's Mark, you know whether the creature has any Immunities, Resistances, or Vulnerabilities, and if the creature has any, you know what they are."
-        ),
-        "Hunter's Prey": (
-            "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\n\n"
-            "Colossus Slayer. Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it's missing any of its Hit Points. You can deal this extra damage only once per turn.\n\n"
-            "Horde Breaker. Once on each of your turns when you make an attack with a weapon, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target, that is within the weapon's range, and that you haven't attacked this turn."
-        )
-    },
-    7: {
-        "Defensive Tactics": (
-            "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.\n\n"
-            "Escape the Horde. Opportunity Attacks have Disadvantage against you.\n\n"
-            "Multiattack Defense. When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn."
-        )
-    },
-    11: {
-        "Superior Hunter's Prey": (
-            "Once per turn when you deal damage to a creature marked by your Hunter's Mark, you can also deal that spell's extra damage to a different creature that you can see within 30 feet of the first creature."
-        )
-    },
-    15: {
-        "Superior Hunter's Defense": (
-            "When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn."
-        )
-    }
-}
-

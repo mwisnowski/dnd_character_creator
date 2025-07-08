@@ -1,5 +1,3 @@
-
-
 """
 spells.py
 ---------
@@ -65,30 +63,29 @@ def prompt_and_print_class_spell_list():
     columns = ["Name", "School", "Casting Time", "Range", "Duration", "Description"]
     print_spell_table(filtered, columns, PrettyTable)
 
-def add_class_spell(class_name, level, known_spells=None):
+def add_class_spell(class_name, level, known_spells=None, exclude_spells=None):
     """
     Prompts the user to select a spell for the given class and level, displaying a PrettyTable of available spells.
-    Only spells not already in known_spells are selectable. Uses inquirer with bottom>top cycling.
+    Only spells not already in known_spells or exclude_spells are selectable. Uses inquirer with bottom>top cycling.
 
     Args:
         class_name (str): The class for which to select a spell.
         level (int): The spell level (0 for cantrips).
         known_spells (list or set, optional): List or set of already known spell names for this level.
+        exclude_spells (list or set, optional): List or set of spell names to exclude (e.g., feature-granted spells).
 
     Returns:
         tuple: (spell_name, spell_data) for the selected spell, or (None, None) if cancelled.
     """
-
-
     if PrettyTable is None:
         print("PrettyTable is not installed. Please install it with 'pip install prettytable'.")
         return None, None
 
     spell_dicts = get_spell_dicts()
     spells = spell_dicts.get(level, {})
-    filtered = filter_spells_by_class_and_known(spells, class_name, known_spells)
+    filtered = filter_spells_by_class_and_known(spells, class_name, known_spells, exclude_spells)
     if not filtered:
-        print("No available spells for this class and level (or all are already known).")
+        print("No available spells for this class and level (or all are already known or granted by features).")
         return None, None
 
     columns = ["Name", "School", "Casting Time", "Range", "Duration", "Description"]

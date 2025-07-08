@@ -1,23 +1,89 @@
-from misc.feats_utils import add_feat
-from misc.feats import FIGHTING_STYLE_FEATS
+"""
+Class utilities for the D&D character creator.
+Handles class-specific feature choices, class and subclass browsing UI, table display utilities, and integration with spell, feat, and equipment logic.
+"""
+
+# 3rd-party imports
 from InquirerPy import inquirer
-from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
-from spells.spells import add_class_spell
 from prettytable import PrettyTable, ALL
 
-def handle_class_feature_choices(class_name, class_data, class_features, known_spells=None, character=None):
+# Local imports
+from misc.feats_utils import add_feat
+from misc.feats import FIGHTING_STYLE_FEATS
+from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
+from spells.spells import add_class_spell
+from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, PATH_OF_THE_BERSERKER, PATH_OF_THE_WILD_HEART, PATH_OF_THE_WORLD_TREE, PATH_OF_THE_ZEALOT
+from .bard import BARD_CLASS, BARD_LEVELS, BARD_FEATURES, COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, COLLEGE_OF_VALOR
+from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
+from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, CIRCLE_OF_THE_STARS
+from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR
+from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
+from .paladin import PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, OATH_OF_VENGEANCE
+from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER
+
+# --- AVAILABLE_CLASSES: Central registry of all supported D&D classes and their data ---
+AVAILABLE_CLASSES = {
+    'Barbarian': (BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, {
+        'Path of the Berserker': PATH_OF_THE_BERSERKER,
+        'Path of the Wild Heart': PATH_OF_THE_WILD_HEART,
+        'Path of the World Tree': PATH_OF_THE_WORLD_TREE,
+        'Path of the Zealot': PATH_OF_THE_ZEALOT,
+    }),
+    'Bard': (BARD_CLASS, BARD_LEVELS, BARD_FEATURES, {
+        'College of Dance': COLLEGE_OF_DANCE,
+        'College of Glamour': COLLEGE_OF_GLAMOUR,
+        'College of Lore': COLLEGE_OF_LORE,
+        'College of Valor': COLLEGE_OF_VALOR,
+    }),
+    'Cleric': (CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, {
+        'Life Domain': LIFE_DOMAIN,
+        'Light Domain': LIGHT_DOMAIN,
+        'War Domain': WAR_DOMAIN,
+    }),
+    'Druid': (DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, {
+        'Circle of the Land': CIRCLE_OF_THE_LAND,
+        'Circle of the Moon': CIRCLE_OF_THE_MOON,
+        'Circle of the Sea': CIRCLE_OF_THE_SEA,
+        'Circle of the Stars': CIRCLE_OF_THE_STARS,
+    }),
+    'Fighter': (FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, {
+        'Battle Master': BATTLE_MASTER,
+        'Champion': CHAMPION,
+        'Eldritch Knight': ELDRITCH_KNIGHT,
+        'Psi Warrior': PSI_WARRIOR,
+    }),
+    'Monk': (MONK_CLASS, MONK_LEVELS, MONK_FEATURES, {
+        'Warrior of Mercy': WARRIOR_OF_MERCY,
+        'Way of Shadow': WAY_OF_SHADOW,
+        'Way of the Elements': WAY_OF_THE_ELEMENTS,
+        'Way of the Open Hand': WAY_OF_THE_OPEN_HAND,
+    }),
+    'Paladin': (PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, {
+        'Oath of Devotion': OATH_OF_DEVOTION,
+        'Oath of the Ancients': OATH_OF_THE_ANCIENTS,
+        'Oath of Vengeance': OATH_OF_VENGEANCE,
+    }),
+    'Ranger': (RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, {
+        'Beast Master': BEAST_MASTER,
+        'Fey Wanderer': FEY_WANDERER,
+        'Gloom Stalker': GLOOM_STALKER,
+        'Hunter': HUNTER,
+    }),
+}
+
+def handle_class_feature_choices(class_name, class_data, class_features, known_spells, character=None):
     """
-    Handles class-specific feature choices and assignments (e.g., Weapon Mastery, Divine Order).
-    Modifies class_data and known_spells in-place as needed.
-    Returns a dict of extra choices made (e.g., weapon_mastery, divine_order, extra_cantrips).
+    Handles class-specific feature choices (e.g., Fighting Style, Divine Domain).
+    This function should only update known_spells directly if a feature grants a spell.
+    All spells (user-chosen and feature-granted) are managed in known_spells.
     """
-    if known_spells is None:
-        known_spells = {}
     extra_choices = {}
+    
     # Barbarian, Fighter, & Paladin: Weapon Mastery
-    if class_name in ('Barbarian', 'Fighter', 'Paladin') and 'Weapon Mastery' in class_features:
+    if class_name in ('Barbarian', 'Fighter', 'Paladin', 'Ranger') and 'Weapon Mastery' in class_features:
         weapon_mastery = choose_weapon_mastery(num_choices=2)
         extra_choices['weapon_mastery'] = weapon_mastery
+        
     # Cleric: Divine Order
     if class_name == 'Cleric' and 'Divine Order' in class_features:
         from .cleric import CLERIC_FEATURES
@@ -33,6 +99,7 @@ def handle_class_feature_choices(class_name, class_data, class_features, known_s
         }
         feature_desc = CLERIC_FEATURES.get('Divine Order', '')
         handle_order_feature(class_name, class_data, known_spells, extra_choices, 'Divine Order', options, feature_desc)
+    
     # Druid: Primal Order
     if class_name == 'Druid' and 'Primal Order' in class_features:
         from .druid import DRUID_FEATURES
@@ -48,8 +115,9 @@ def handle_class_feature_choices(class_name, class_data, class_features, known_s
         }
         feature_desc = DRUID_FEATURES.get('Primal Order', '')
         handle_order_feature(class_name, class_data, known_spells, extra_choices, 'Primal Order', options, feature_desc)
-    feats_gained = []
+    
     # Fighter: Fighting Style feat
+    feats_gained = []
     if class_name == 'Fighter' and any("Fighting Style" in f for f in class_features):
         # Determine currently known fighting styles (if any)
         known_styles = set()
@@ -69,6 +137,7 @@ def handle_class_feature_choices(class_name, class_data, class_features, known_s
             feats_gained.append(feat_result)
     if feats_gained:
         extra_choices['feats_gained'] = feats_gained
+
     return extra_choices
 
 """
@@ -155,12 +224,119 @@ def handle_order_feature(class_name, class_data, known_spells, extra_choices, fe
                 extra_choices['extra_cantrips'] = []
             extra_choices['extra_cantrips'].append((spell_name, spell_data))
 
+def handle_class_feature_spells(class_name, class_data, class_features):
+    """
+    Returns a dictionary of spells granted by class features (not chosen by the user).
+    Example: Ranger's Favored Enemy grants Hunter's Mark at level 1.
+    Returns: {level: {spell_name: spell_data}}
+    """
+    from spells.spells_utils import get_spell_dicts
+    feature_spells = {}
+    # Example: Ranger - Favored Enemy grants Hunter's Mark at level 1
+    if class_name == 'Ranger' and 'Favored Enemy' in class_features:
+        spell_dicts = get_spell_dicts()
+        # Hunter's Mark is a 1st-level spell
+        spell_name = "Hunter's Mark"
+        spell_data = spell_dicts[1].get(spell_name)
+        if spell_data:
+            feature_spells.setdefault(1, {})[spell_name] = spell_data
+    # Add more class/feature spell grants here as needed
+    return feature_spells
+
+def display_table(data, title=None, columns=None, field_name_map=None, special_formatters=None):
+    """
+    Generic PrettyTable display for a list/dict of dicts.
+    Args:
+        data: dict of dicts or list of dicts (e.g., class_levels, spellcasting table, etc.)
+        title: Optional table title to print before the table.
+        columns: Optional list of columns to display (if None, auto-detect from data).
+        field_name_map: Optional dict to map column keys to display names.
+        special_formatters: Optional dict mapping column names to formatting functions.
+    """
+    if isinstance(data, dict):
+        # Assume each value already has 'Level' or equivalent key
+        rows = [v for _, v in sorted(data.items())]
+    else:
+        rows = data
+    if not columns:
+        columns = set()
+        for row in rows:
+            columns.update(row.keys())
+        columns = sorted(columns)
+    table = PrettyTable()
+    if field_name_map:
+        table.field_names = [field_name_map.get(col, col.capitalize().replace('_', ' ')) for col in columns]
+    else:
+        table.field_names = [col.capitalize().replace('_', ' ') for col in columns]
+    table.align = "l"
+    for row in rows:
+        row_data = []
+        for col in columns:
+            val = row.get(col, '-')
+            if special_formatters and col in special_formatters:
+                val = special_formatters[col](val)
+            elif isinstance(val, list):
+                val = ', '.join(str(x) for x in val)
+            elif isinstance(val, dict):
+                val = ', '.join(f"{k}: {v}" for k, v in val.items())
+            row_data.append(val)
+        table.add_row(row_data)
+    if title:
+        print(f"\n{title}")
+    print(table)
+
+def display_class_tables(class_name, class_levels):
+    """
+    Display the class progression and spellcasting tables for the selected class.
+    """
+    # Class progression table
+    display_table(class_levels, title=f"{class_name} Progression Table:")
+
+    # Spellcasting table
+    has_spellcasting = any('spellcasting' in lvl_data for lvl_data in class_levels.values())
+    if has_spellcasting:
+        # Build spellcasting table data
+        spell_rows = {}
+        spell_cols = set()
+        for lvl, lvl_data in class_levels.items():
+            if 'spellcasting' in lvl_data:
+                row = {'Level': lvl}
+                for k, v in lvl_data['spellcasting'].items():
+                    if k == 'spells_known':
+                        continue
+                    row[k] = v
+                    spell_cols.add(k)
+                spell_rows[lvl] = row
+        spell_cols = [col for col in sorted(spell_cols) if col != 'spell_slots'] + (['spell_slots'] if 'spell_slots' in spell_cols else [])
+        columns = ['Level'] + spell_cols
+        display_table(spell_rows, title=f"{class_name} Spellcasting Table:", columns=columns)
+
+    # Special: If class is Fighter, also show Eldritch Knight spellcasting table for reference
+    if class_name == 'Fighter':
+        from .fighter import ELDRITCH_KNIGHT_SPELLCASTING
+        display_table(
+            ELDRITCH_KNIGHT_SPELLCASTING,
+            title="Eldritch Knight Spellcasting Table:",
+            columns=["Level", "spells_prepared", "1st", "2nd", "3rd", "4th"],
+            field_name_map={
+                "spells_prepared": "Spells Prepared",
+                "1st": "1st",
+                "2nd": "2nd",
+                "3rd": "3rd",
+                "4th": "4th"
+            }
+        )
+
+    # Special: If class is Monk, show Martial Arts table
+    if class_name == 'Monk':
+        from .monk import MARTIAL_ARTS
+        display_table(MARTIAL_ARTS, title="Monk Martial Arts Table:")
+
 def display_eldritch_knight_spellcasting_table():
     """
     Display the Eldritch Knight Spellcasting table using PrettyTable.
     """
     from .fighter import ELDRITCH_KNIGHT_SPELLCASTING
-    from prettytable import PrettyTable
     table = PrettyTable()
     table.field_names = ["Level", "Spells Prepared", "1st", "2nd", "3rd", "4th"]
     table.align = "l"

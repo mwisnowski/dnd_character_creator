@@ -1,4 +1,3 @@
-
 """
 spells_utils.py
 ----------------
@@ -29,23 +28,29 @@ def get_spell_dicts():
         3: THIRD_LEVEL_SPELLS_DICT,
     }
 
-def filter_spells_by_class_and_known(spells, class_name, known_spells=None):
+def filter_spells_by_class_and_known(spells, class_name, known_spells=None, exclude_spells=None):
     """
-    Filter a spell dictionary for spells available to a given class, optionally excluding already known spells.
+    Filter a spell dictionary for spells available to a given class, optionally excluding already known spells and any in exclude_spells.
 
     Args:
         spells (dict): Dictionary of spells to filter.
         class_name (str): The class to filter spells for.
         known_spells (set or list, optional): Spells to exclude from the result.
+        exclude_spells (set or list, optional): Additional spells to exclude (e.g., feature-granted spells).
 
     Returns:
-        dict: Filtered dictionary of spells for the class and not already known.
+        dict: Filtered dictionary of spells for the class and not already known or excluded.
     """
     if known_spells is None:
         known_spells = set()
     else:
         known_spells = set(known_spells)
-    return {name: data for name, data in spells.items() if class_name in data.get("classes", []) and name not in known_spells}
+    if exclude_spells is None:
+        exclude_spells = set()
+    else:
+        exclude_spells = set(exclude_spells)
+    all_excluded = known_spells | exclude_spells
+    return {name: data for name, data in spells.items() if class_name in data.get("classes", []) and name not in all_excluded}
 
 def print_spell_table(filtered, columns, prettytable_cls=None):
     """
