@@ -161,3 +161,8 @@ Branch: classes_work
 - Setup framework for adding spells granted by class features (i.e. Favored Enemy granting Hunter's Mark)
   - Made it so these spells don't show in spell selection
   - Added to spells_known printout of character sheet
+
+v 1.00.16
+Branch: cleanup_work
+- Updated README.md to fully reflect scope of project as-is
+- Added requirements.txt based on current requirements

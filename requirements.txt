@@ -1,0 +1,5 @@
+# Core dependencies
+InquirerPy
+prettytable
+
+# Add any other dependencies as needed for your project
