@@ -190,3 +190,17 @@ Branch: classes_work
   - Created display_dict_table() for displaying subclass feature dictionaries - currently only used for Soulknife Rogue, but allows for later implementation
   - Created display_stat_block() for displaying stat blocks related to class features, such as Beast Master Ranger Primal Companions
   - Added "Back to Class Selection" when browsing class features to do just that
+
+v 1.00.19
+Branch: stats_work
+- stats.py:
+  - Added calc_hp() for HP calculation
+  - Added calc_ac() for AC calcuation
+- class_selection.py:
+  - Implemented passing of class_hit_die
+- character_creation.py;
+  - Added HP calcuation
+  - Added logic for equipping armor
+  - Added marker to indicate armor is equipped
+  - Added AC calcuation
+  - Broke determine_ability_scores into two seperate functions (determine_ability_scores and calculate_ability_modifiers)
