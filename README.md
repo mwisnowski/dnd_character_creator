@@ -60,6 +60,18 @@ The main menu provides the following options:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## Credits
+
+- Form-fillable PDF character sheets provided by user "Guest 7037866" at enworld.org: [2024 D&D Character Sheets Download](https://www.enworld.org/threads/2024-d-d-character-sheets-available-to-download.706499/page-15#post-9500411)
+01_NS_NC.pdf - Non-caster, no creature (such as Fighter)
+02_NS_WC.pdf - Non-caster, with creature (no such implementation from 5e 2024 PHB classes)
+03_HS_NC.pdf - Half-caster, no creature (such as Paladin)
+04_HS_WC.pdf - Half-caster, with creature (such as Beast Master Ranger)
+05_WS_NC.pdf - Whole caster, no creature (such as Warlock)
+06_WS_WC.pdf - Whole caster, with creature (such as Wizard with Familiar)
+07_WS_HS_NC.pdf - Whole caster, half-caster, no creature (same as 05, but with quick half-caster table, likely to be unused)
+08_WS_HS_WC.pdf - Whole caster, half-caster, nowith creature (same as 06, but with quick half-caster table, likely to be unused)
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
