@@ -17,7 +17,8 @@ FIGHTER_CLASS: Dict[str, Any] = {
         'tools': [],
         'skills': [
             'Acrobatics', 'Animal Handling', 'Athletics', 'History', 'Insight', 'Intimidation', 'Persuasion', 'Perception', 'Survival'
-        ]
+        ],
+        "skills_choose": 2
     },
     'starting_equipment': [
         [
@@ -248,14 +249,14 @@ ELDRITCH_KNIGHT: Dict[Union[str, int], Any] = {
     3: {
         "Spellcasting": (
             "You have learned to cast spells. See chapter 7 for the rules on spellcasting. The information below details how you use those rules as an Eldritch Knight.\n\n"
-            "Cantrips. You know two cantrips of your choice from the Wizard spell list. Ray of Frost and Shocking Grasp are recommended. Whenever you gain a Fighter level, you can replace one of these cantrips with another cantrip of your choice from the Wizard spell list.\n\n"
-            "When you reach Fighter level 10, you learn another Wizard cantrip of your choice.\n\n"
-            "Spell Slots. The Eldritch Knight Spellcasting table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.\n\n"
-            "Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose three level 1 spells from the Wizard spell list. Burning Hands, Jump, and Shield are recommended.\n\n"
-            "The number of spells on your list increases as you gain Fighter levels, as shown in the Prepared Spells column of the Eldritch Knight Spellcasting table. Whenever that number increases, choose additional spells from the Wizard spell list until the number of spells on your list matches the number on the table. The chosen spells must be of a level for which you have spell slots.\n\n"
-            "Changing Your Prepared Spells. Whenever you gain a Fighter level, you can replace one spell on your list with another Wizard spell for which you have spell slots.\n\n"
-            "Spellcasting Ability. Intelligence is your spellcasting ability for your Wizard spells.\n\n"
-            "Spellcasting Focus. You can use an Arcane Focus as a Spellcasting Focus for your Wizard spells."
+            "  - Cantrips. You know two cantrips of your choice from the Wizard spell list. Ray of Frost and Shocking Grasp are recommended. Whenever you gain a Fighter level, you can replace one of these cantrips with another cantrip of your choice from the Wizard spell list.\n\n"
+            "    When you reach Fighter level 10, you learn another Wizard cantrip of your choice.\n\n"
+            "  - Spell Slots. The Eldritch Knight Spellcasting table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.\n\n"
+            "  - Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose three level 1 spells from the Wizard spell list. Burning Hands, Jump, and Shield are recommended.\n\n"
+            "    The number of spells on your list increases as you gain Fighter levels, as shown in the Prepared Spells column of the Eldritch Knight Spellcasting table. Whenever that number increases, choose additional spells from the Wizard spell list until the number of spells on your list matches the number on the table. The chosen spells must be of a level for which you have spell slots.\n\n"
+            "  - Changing Your Prepared Spells. Whenever you gain a Fighter level, you can replace one spell on your list with another Wizard spell for which you have spell slots.\n\n"
+            "  - Spellcasting Ability. Intelligence is your spellcasting ability for your Wizard spells.\n\n"
+            "  - Spellcasting Focus. You can use an Arcane Focus as a Spellcasting Focus for your Wizard spells."
         ),
         "War Bond": (
             "You learn a ritual that creates a magical bond between yourself and one weapon. You perform the ritual over the course of 1 hour, which can be done during a Short Rest. The weapon must be within your reach throughout the ritual, at the conclusion of which you touch the weapon and forge the bond. The bond fails if another Fighter is bonded to the weapon or if the weapon is a magic item to which someone else is attuned.\n\n"
@@ -286,24 +287,24 @@ ELDRITCH_KNIGHT: Dict[Union[str, int], Any] = {
 }
 
 ELDRITCH_KNIGHT_SPELLCASTING: Dict[int, Dict[str, Union[int, str]]] = {
-    3:  {"spells_prepared": 3, "1st": 2, "2nd": 0, "3rd": 0, "4th": 0},
-    4:  {"spells_prepared": 4, "1st": 3, "2nd": 0, "3rd": 0, "4th": 0},
-    5:  {"spells_prepared": 4, "1st": 3, "2nd": 0, "3rd": 0, "4th": 0},
-    6:  {"spells_prepared": 4, "1st": 3, "2nd": 0, "3rd": 0, "4th": 0},
-    7:  {"spells_prepared": 5, "1st": 4, "2nd": 2, "3rd": 0, "4th": 0},
-    8:  {"spells_prepared": 6, "1st": 4, "2nd": 2, "3rd": 0, "4th": 0},
-    9:  {"spells_prepared": 6, "1st": 4, "2nd": 2, "3rd": 0, "4th": 0},
-    10: {"spells_prepared": 7, "1st": 4, "2nd": 3, "3rd": 0, "4th": 0},
-    11: {"spells_prepared": 8, "1st": 4, "2nd": 3, "3rd": 0, "4th": 0},
-    12: {"spells_prepared": 8, "1st": 4, "2nd": 3, "3rd": 0, "4th": 0},
-    13: {"spells_prepared": 9, "1st": 4, "2nd": 3, "3rd": 2, "4th": 0},
-    14: {"spells_prepared": 10, "1st": 4, "2nd": 3, "3rd": 2, "4th": 0},
-    15: {"spells_prepared": 10, "1st": 4, "2nd": 3, "3rd": 2, "4th": 0},
-    16: {"spells_prepared": 11, "1st": 4, "2nd": 3, "3rd": 3, "4th": 0},
-    17: {"spells_prepared": 11, "1st": 4, "2nd": 3, "3rd": 3, "4th": 0},
-    18: {"spells_prepared": 11, "1st": 4, "2nd": 3, "3rd": 3, "4th": 0},
-    19: {"spells_prepared": 12, "1st": 4, "2nd": 3, "3rd": 3, "4th": 1},
-    20: {"spells_prepared": 13, "1st": 4, "2nd": 3, "3rd": 3, "4th": 1},
+    3:  {"spells_prepared": 3, "spells_known": 3, "1st": 2, "2nd": 0, "3rd": 0, "4th": 0},
+    4:  {"spells_prepared": 4, "spells_known": 4, "1st": 3, "2nd": 0, "3rd": 0, "4th": 0},
+    5:  {"spells_prepared": 4, "spells_known": 4, "1st": 3, "2nd": 0, "3rd": 0, "4th": 0},
+    6:  {"spells_prepared": 4, "spells_known": 4, "1st": 3, "2nd": 0, "3rd": 0, "4th": 0},
+    7:  {"spells_prepared": 5, "spells_known": 5, "1st": 4, "2nd": 2, "3rd": 0, "4th": 0},
+    8:  {"spells_prepared": 6, "spells_known": 6, "1st": 4, "2nd": 2, "3rd": 0, "4th": 0},
+    9:  {"spells_prepared": 6, "spells_known": 6, "1st": 4, "2nd": 2, "3rd": 0, "4th": 0},
+    10: {"spells_prepared": 7, "spells_known": 7, "1st": 4, "2nd": 3, "3rd": 0, "4th": 0},
+    11: {"spells_prepared": 8, "spells_known": 8, "1st": 4, "2nd": 3, "3rd": 0, "4th": 0},
+    12: {"spells_prepared": 8, "spells_known": 8, "1st": 4, "2nd": 3, "3rd": 0, "4th": 0},
+    13: {"spells_prepared": 9, "spells_known": 9, "1st": 4, "2nd": 3, "3rd": 2, "4th": 0},
+    14: {"spells_prepared": 10, "spells_known": 10, "1st": 4, "2nd": 3, "3rd": 2, "4th": 0},
+    15: {"spells_prepared": 10, "spells_known": 10, "1st": 4, "2nd": 3, "3rd": 2, "4th": 0},
+    16: {"spells_prepared": 11, "spells_known": 11, "1st": 4, "2nd": 3, "3rd": 3, "4th": 0},
+    17: {"spells_prepared": 11, "spells_known": 11, "1st": 4, "2nd": 3, "3rd": 3, "4th": 0},
+    18: {"spells_prepared": 11, "spells_known": 11, "1st": 4, "2nd": 3, "3rd": 3, "4th": 0},
+    19: {"spells_prepared": 12, "spells_known": 12, "1st": 4, "2nd": 3, "3rd": 3, "4th": 1},
+    20: {"spells_prepared": 13, "spells_known": 13, "1st": 4, "2nd": 3, "3rd": 3, "4th": 1},
 }
 
 PSI_WARRIOR: Dict[Union[str, int], Any] = {

@@ -16,10 +16,15 @@ from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, PA
 from .bard import BARD_CLASS, BARD_LEVELS, BARD_FEATURES, COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, COLLEGE_OF_VALOR
 from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
 from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, CIRCLE_OF_THE_STARS
-from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR
+from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR, ELDRITCH_KNIGHT_SPELLCASTING
 from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
 from .paladin import PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, OATH_OF_VENGEANCE
-from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER
+from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA, BEAST_OF_THE_SKY
+from .rogue import (
+    ROGUE_CLASS, ROGUE_LEVELS, ROGUE_FEATURES,
+    ARCANE_TRICKSTER, ARCANE_TRICKSTER_SPELLCASTING,
+    ASSASSIN, SOULKNIFE, SOULKNIFE_ENERGY_DICE, THIEF
+)
 
 # --- AVAILABLE_CLASSES: Central registry of all supported D&D classes and their data ---
 AVAILABLE_CLASSES = {
@@ -68,6 +73,12 @@ AVAILABLE_CLASSES = {
         'Fey Wanderer': FEY_WANDERER,
         'Gloom Stalker': GLOOM_STALKER,
         'Hunter': HUNTER,
+    }),
+    'Rogue': (ROGUE_CLASS, ROGUE_LEVELS, ROGUE_FEATURES, {
+        'Arcane Trickster': ARCANE_TRICKSTER,
+        'Assassin': ASSASSIN,
+        'Soulknife': SOULKNIFE,
+        'Thief': THIEF,
     }),
 }
 
@@ -311,37 +322,23 @@ def display_class_tables(class_name, class_levels):
         columns = ['Level'] + spell_cols
         display_table(spell_rows, title=f"{class_name} Spellcasting Table:", columns=columns)
 
-    # Special: If class is Fighter, also show Eldritch Knight spellcasting table for reference
-    if class_name == 'Fighter':
-        from .fighter import ELDRITCH_KNIGHT_SPELLCASTING
-        display_table(
-            ELDRITCH_KNIGHT_SPELLCASTING,
-            title="Eldritch Knight Spellcasting Table:",
-            columns=["Level", "spells_prepared", "1st", "2nd", "3rd", "4th"],
-            field_name_map={
-                "spells_prepared": "Spells Prepared",
-                "1st": "1st",
-                "2nd": "2nd",
-                "3rd": "3rd",
-                "4th": "4th"
-            }
-        )
-
     # Special: If class is Monk, show Martial Arts table
     if class_name == 'Monk':
         from .monk import MARTIAL_ARTS
         display_table(MARTIAL_ARTS, title="Monk Martial Arts Table:")
 
-def display_eldritch_knight_spellcasting_table():
+def display_subclass_spellcasting_table(subclass_dict: dict, subclass_name: str) -> None:
     """
-    Display the Eldritch Knight Spellcasting table using PrettyTable.
+    Display the subclass spellcasting table using PrettyTable.
+    Args:
+        subclass_dict (dict): The subclass spellcasting data.
+        subclass_name (str): The name of the subclass.
     """
-    from .fighter import ELDRITCH_KNIGHT_SPELLCASTING
     table = PrettyTable()
     table.field_names = ["Level", "Spells Prepared", "1st", "2nd", "3rd", "4th"]
     table.align = "l"
-    for lvl in sorted(ELDRITCH_KNIGHT_SPELLCASTING.keys()):
-        row = ELDRITCH_KNIGHT_SPELLCASTING[lvl]
+    for lvl in sorted(subclass_dict.keys()):
+        row = subclass_dict[lvl]
         table.add_row([
             lvl,
             row.get("spells_prepared", "-"),
@@ -350,8 +347,69 @@ def display_eldritch_knight_spellcasting_table():
             row.get("3rd", "-"),
             row.get("4th", "-")
         ])
-    print("\nEldritch Knight Spellcasting Table:")
+    print(f"\n{subclass_name} Spellcasting Table:")
     print(table)
+
+def display_dict_table(subclass_name: str, subclass_dict: dict, feature_name: str = None) -> None:
+    """
+    Display a table for any dict-of-dicts, extracting field names and row values dynamically.
+    Args:
+        subclass_name (str): The name of the subclass or table.
+        subclass_dict (dict): The data dictionary (keys: int/str, values: dict).
+        feature_name (str, optional): The feature this table is for (e.g., 'Energy Dice').
+    """
+    if not subclass_dict:
+        print(f"\n{subclass_name}: No data to display.")
+        return
+    # Get all possible field names from all rows
+    field_names = set()
+    for row in subclass_dict.values():
+        if isinstance(row, dict):
+            field_names.update(row.keys())
+    field_names = ["Level"] + sorted(field_names)
+    table = PrettyTable()
+    table.field_names = ["Level"] + [fn.replace('_', ' ').title() for fn in field_names[1:]]
+    table.align = "l"
+    for lvl in sorted(subclass_dict.keys()):
+        row = subclass_dict[lvl]
+        row_data = [lvl]
+        for fn in field_names[1:]:
+            row_data.append(row.get(fn, "-"))
+        table.add_row(row_data)
+    title = f"\n{subclass_name}"
+    if feature_name:
+        title = f"{feature_name} Table:"
+    else:
+        title += " Table:"
+    print(title)
+    print(table)
+
+def display_stat_block(stat_block: dict, title: str = None):
+    """
+    Print a D&D-style stat block from a dict, handling nested dicts/lists for readability.
+    """
+    import textwrap
+    def print_kv(key, value, indent=0):
+        prefix = ' ' * indent + f"{key.replace('_', ' ').title()}: "
+        if isinstance(value, dict):
+            print(prefix)
+            for k, v in value.items():
+                print_kv(k, v, indent + 2)
+        elif isinstance(value, list):
+            print(prefix)
+            for item in value:
+                if isinstance(item, dict):
+                    for k, v in item.items():
+                        print_kv(k, v, indent + 2)
+                else:
+                    print(' ' * (indent + 2) + str(item))
+        else:
+            val_str = textwrap.fill(str(value), width=100, subsequent_indent=' ' * (indent + 2))
+            print(prefix + val_str)
+    if title:
+        print(f"\n=== {title} ===")
+    for k, v in stat_block.items():
+        print_kv(k, v, indent=0)
 
 def browse_class_features_prompt(class_name: str, class_data: dict, class_levels: dict, class_features: dict, subclass_dicts: dict) -> None:
     """
@@ -473,30 +531,52 @@ def browse_class_features_prompt(class_name: str, class_data: dict, class_levels
                 'value': feat
             } for lvl, feat in ordered_features
         ]
+        choices.append({'name': 'Back to Class Selection', 'value': '__back_to_class_selection__'})
         choices.append({'name': 'Continue', 'value': '__continue__'})
         selected = inquirer.select(
             message=f"Browse {class_name} features (select to view, or Continue):",
             choices=choices
         ).execute()
+        if selected == '__back_to_class_selection__':
+            return 'back_to_class_selection'
         if selected == '__continue__':
             break
         # Check if this is a subclass feature
         if subclass_dicts and (selected == 'Subclass Feature' or selected.endswith('Subclass')):
             while True:
                 subclass_names = list(subclass_dicts.keys())
+                subclass_choices = subclass_names + ['Back', 'Back to Class Selection']
                 subclass_choice = inquirer.select(
                     message="Select a subclass to view features:",
-                    choices=subclass_names + ['Back']
+                    choices=subclass_choices
                 ).execute()
                 if subclass_choice == 'Back':
                     break
+                if subclass_choice == 'Back to Class Selection':
+                    # Signal to caller to return to main class selection menu
+                    return 'back_to_class_selection'
                 subclass = subclass_dicts[subclass_choice]
+                
                 # Print subclass description if present
                 if 'description' in subclass:
                     print_feature_desc(subclass['description'], title=f"{subclass_choice} Description")
-                # Special: Show Eldritch Knight spellcasting table if browsing that subclass
-                if class_name == 'Fighter' and subclass_choice == 'Eldritch Knight':
-                    display_eldritch_knight_spellcasting_table()
+                
+                # Special: Show subclass spellcasting table if browsing that subclass
+                if (class_name == 'Fighter' or class_name == 'Rogue') and (subclass_choice == 'Eldritch Knight' or subclass_choice == 'Arcane Trickster'):
+                    if subclass_choice == 'Eldritch Knight':
+                        subclass_dict = ELDRITCH_KNIGHT_SPELLCASTING
+                    elif subclass_choice == 'Arcane Trickster':
+                        subclass_dict = ARCANE_TRICKSTER_SPELLCASTING
+                    display_subclass_spellcasting_table(subclass_dict, subclass_choice)
+                
+                # Special handling for Soulknife subclass
+                if class_name == 'Rogue' and subclass_choice == 'Soulknife':
+                    subclass_dict = SOULKNIFE_ENERGY_DICE
+                    display_dict_table(subclass_choice, subclass_dict, 'Soulknife Energy Dice')
+                
+                # Special handling for Ranger > Beast Master companion tables
+                # (Moved logic to feature selection below)
+                
                 feature_keys = [k for k in subclass.keys() if k != 'description']
                 if feature_keys and all(isinstance(k, int) for k in feature_keys):
                     while True:
@@ -507,22 +587,49 @@ def browse_class_features_prompt(class_name: str, class_data: dict, class_levels
                             level_choices.append({'name': f"{lvl}: {', '.join(feats)}", 'value': lvl})
                             level_to_feats[lvl] = feats
                         level_choices.append({'name': 'Back', 'value': 'Back'})
+                        level_choices.append({'name': 'Back to Class Selection', 'value': 'Back to Class Selection'})
                         selected_level = inquirer.select(
                             message="Select a level to view all feature descriptions:",
                             choices=level_choices
                         ).execute()
                         if selected_level == 'Back':
                             break
+                        if selected_level == 'Back to Class Selection':
+                            # Signal to caller to return to main class selection menu
+                            return 'back_to_class_selection'
                         lvl = selected_level
                         # Show all feature descriptions for this level
                         if isinstance(subclass[lvl], dict):
                             for feat in level_to_feats[lvl]:
                                 desc = subclass[lvl][feat]
                                 print_feature_desc(desc, title=f"{subclass_choice} {lvl} - {feat}")
+                                # Special handling: If Beast Master 3 - Primal Companion, prompt to view stat block
+                                if class_name == 'Ranger' and subclass_choice == 'Beast Master' and lvl == 3 and feat == 'Primal Companion':
+                                    primal_choice = inquirer.select(
+                                        message="View Primal Companion stat block?",
+                                        choices=["Primal Companion", "Back"]
+                                    ).execute()
+                                    if primal_choice == "Primal Companion":
+                                        beast_options = [
+                                            ('Beast of the Land', BEAST_OF_THE_LAND),
+                                            ('Beast of the Sea', BEAST_OF_THE_SEA),
+                                            ('Beast of the Sky', BEAST_OF_THE_SKY)
+                                        ]
+                                        beast_names = [b[0] for b in beast_options]
+                                        while True:
+                                            beast_select = inquirer.select(
+                                                message="Select your Beast Companion type:",
+                                                choices=beast_names + ['Back']
+                                            ).execute()
+                                            if beast_select == 'Back':
+                                                break
+                                            beast_dict = dict(beast_options)[beast_select]
+                                            display_stat_block(beast_dict, title=beast_select)
+                                            inquirer.text(message="Press Enter to return.").execute()
                         else:
                             desc = subclass[lvl]
                             print_feature_desc(desc, title=f"{subclass_choice} {lvl}")
-                        inquirer.text(message="Press Enter to return.").execute()
+                            inquirer.text(message="Press Enter to return.").execute()
                 else:
                     if not feature_keys:
                         desc = subclass.get('description', 'No description available.')
@@ -543,3 +650,183 @@ def browse_class_features_prompt(class_name: str, class_data: dict, class_levels
             desc = class_features.get(selected, "No description available.")
             print_feature_desc(desc, title=selected)
             inquirer.text(message="Press Enter to return.").execute()
+
+def choose_proficiencies(class_data, already_proficient):
+    """
+    Handles skill proficiency selection for the chosen class.
+
+    Prompts the user to select skill proficiencies based on the class's rules. Supports both "choose any N skills" and
+    fixed skill lists. Ensures the user cannot select skills they are already proficient in.
+
+    Args:
+        class_data (dict): The class data dictionary, including proficiency info.
+        already_proficient (list): List of skills the character is already proficient in.
+
+    Returns:
+        list: The list of chosen skill proficiencies.
+    """
+    from misc.skills import SKILLS_DICT  # Ensure SKILLS_DICT is available
+    chosen_skills = []
+    profs = class_data['proficiencies']
+    skills_prof = profs.get('skills', [])
+    num_skills = profs.get('skills_choose', 2)
+    # If skills_prof is empty or contains a string like 'any', allow any skill
+    if not skills_prof or (isinstance(skills_prof, list) and skills_prof and isinstance(skills_prof[0], str) and 'any' in skills_prof[0].lower()):
+        available_skills = [s for s in SKILLS_DICT.keys() if s not in already_proficient]
+    else:
+        available_skills = [s for s in skills_prof if s not in already_proficient]
+    if not available_skills:
+        print("No available skill proficiencies to choose from.")
+    elif len(available_skills) <= num_skills:
+        chosen_skills = available_skills.copy()
+        print(f"Automatically selected: {', '.join(chosen_skills)}")
+    else:
+        chosen_skills = inquirer.checkbox(
+            message=f"Choose {num_skills} skill proficiencies:",
+            choices=available_skills,
+            validate=lambda result: (len(result) == num_skills) or (f"You must select exactly {num_skills} skills.")
+        ).execute()
+        while len(chosen_skills) != num_skills:
+            print(f"You must select exactly {num_skills} skills.")
+            chosen_skills = inquirer.checkbox(
+                message=f"Choose {num_skills} skill proficiencies:",
+                choices=available_skills,
+                validate=lambda result: (len(result) == num_skills) or (f"You must select exactly {num_skills} skills.")
+            ).execute()
+    return chosen_skills
+
+def organize_equipment(class_data):
+    """
+    Handles equipment, inventory, and currency selection and organization for the chosen class.
+
+    Prompts the user to choose between equipment options if multiple are available, parses the selected items,
+    and sorts them into equipment, inventory, and currency. Handles item quantities and recognizes armor, weapons,
+    and ammunition using the relevant dictionaries.
+
+    Args:
+        class_data (dict): The class data dictionary, including starting equipment info.
+
+    Returns:
+        tuple: (equipment, inventory, gold_pieces, silver_pieces, copper_pieces)
+            - equipment (list): List of equipped items (with quantities if >1).
+            - inventory (list): List of other items.
+            - gold_pieces (int): Number of gold pieces.
+            - silver_pieces (int): Number of silver pieces.
+            - copper_pieces (int): Number of copper pieces.
+    """
+    from collections import Counter
+    import re
+    from equipment.armor_dict import HEAVY_ARMOR_DICT, LIGHT_ARMOR_DICT, MEDIUM_ARMOR_DICT, SHIELD_DICT
+    from equipment.weapons_dict import AMMUNITION_DICT, MARTIAL_WEAPONS_DICT, SIMPLE_WEAPONS_DICT
+    equipment = []
+    inventory = []
+    gold_pieces = 0
+    silver_pieces = 0
+    copper_pieces = 0
+    if class_data and 'starting_equipment' in class_data:
+        equip_choices = class_data['starting_equipment']
+        if len(equip_choices) > 1:
+            equip_choice = inquirer.select(
+                message="Choose your starting equipment:",
+                choices=[f"Option {i+1}: {', '.join(opt)}" for i, opt in enumerate(equip_choices)]
+            ).execute()
+            idx = int(equip_choice.split()[1].replace(':','')) - 1
+            selected_items = equip_choices[idx]
+        else:
+            selected_items = equip_choices[0]
+        for item in selected_items:
+            gp_match = re.match(r"(\d+) GP", item)
+            sp_match = re.match(r"(\d+) SP", item)
+            cp_match = re.match(r"(\d+) CP", item)
+            multi_match = re.match(r"(\d+) (.+)", item)
+            if gp_match:
+                gold_pieces += int(gp_match.group(1))
+            elif sp_match:
+                silver_pieces += int(sp_match.group(1))
+            elif cp_match:
+                copper_pieces += int(cp_match.group(1))
+            elif multi_match:
+                count = int(multi_match.group(1))
+                base_item = multi_match.group(2).strip()
+                singular_item = base_item.rstrip('s') if base_item.endswith('s') and not base_item.lower().endswith('ss') else base_item
+                found = False
+                for test_item in (base_item, singular_item):
+                    if test_item in LIGHT_ARMOR_DICT or test_item in MEDIUM_ARMOR_DICT or test_item in HEAVY_ARMOR_DICT or test_item in SHIELD_DICT:
+                        equipment.extend([test_item]*count)
+                        found = True
+                        break
+                    elif test_item in SIMPLE_WEAPONS_DICT or test_item in MARTIAL_WEAPONS_DICT or test_item in AMMUNITION_DICT:
+                        equipment.extend([test_item]*count)
+                        found = True
+                        break
+                if not found:
+                    inventory.extend([base_item]*count)
+            elif item in LIGHT_ARMOR_DICT or item in MEDIUM_ARMOR_DICT or item in HEAVY_ARMOR_DICT or item in SHIELD_DICT:
+                equipment.append(item)
+            elif item in SIMPLE_WEAPONS_DICT or item in MARTIAL_WEAPONS_DICT or item in AMMUNITION_DICT:
+                equipment.append(item)
+            else:
+                inventory.append(item)
+        equip_counter = Counter(equipment)
+        equipment = [f"{name} x {count}" if count > 1 else name for name, count in equip_counter.items()]
+    return equipment, inventory, gold_pieces, silver_pieces, copper_pieces
+
+def learn_spell(class_name, spellcasting, known_spells, class_feature_spells=None):
+    """
+    Handles the spell learning process for a class at a given level.
+    Prompts the user to select all required cantrips and leveled spells not already known or granted by features.
+    Returns a list of (spell_level, spell_name, spell_data) for all newly learned spells.
+    """
+    learned_spells = []
+    # Prepare set of feature-granted spells for each level
+    feature_spells_by_level = {}
+    if class_feature_spells:
+        for lvl, spells in class_feature_spells.items():
+            feature_spells_by_level[str(lvl)] = set(spells.keys())
+            if str(lvl) == '0':
+                feature_spells_by_level['Cantrips'] = set(spells.keys())
+    # Learn cantrips
+    cantrips_to_learn = spellcasting.get('cantrips_known', 0)
+    if cantrips_to_learn:
+        known_cantrips = set(known_spells.get('Cantrips', {}))
+        exclude_cantrips = feature_spells_by_level.get('Cantrips', set())
+        while len(known_cantrips) < cantrips_to_learn:
+            spell_name, spell_data = add_class_spell(class_name, 0, known_cantrips, exclude_cantrips)
+            if not spell_name:
+                break
+            learned_spells.append((0, spell_name, spell_data))
+            known_cantrips.add(spell_name)
+    # Learn leveled spells (use 'spells_known' if present, else 'spells_prepared')
+    spells_to_learn = spellcasting.get('spells_known', spellcasting.get('spells_prepared', 0))
+    if spells_to_learn:
+        # Gather all available spell levels
+        available_levels = []
+        for key in spellcasting.get('spell_slots', {}).keys():
+            try:
+                lvl_num = int(key.split()[-1])
+                available_levels.append(lvl_num)
+            except (ValueError, IndexError):
+                continue
+        available_levels = sorted(set(available_levels))
+        # Gather all known spells across all available levels
+        known_level_spells = set()
+        for lvl in available_levels:
+            known_level_spells.update(known_spells.get(str(lvl), {}))
+        # Loop until the total number of known spells matches spells_to_learn
+        while len(known_level_spells) < spells_to_learn:
+            # Prompt user to pick a spell level
+            level_choices = [str(lvl) for lvl in available_levels]
+            spell_level_str = inquirer.select(
+                message="Select spell level to learn a new spell:",
+                choices=level_choices
+            ).execute()
+            spell_level = int(spell_level_str)
+            # Filter out already known spells at this level and feature-granted spells
+            known_at_level = set(known_spells.get(str(spell_level), {})) | {name for lvl, name, _ in learned_spells if lvl == spell_level}
+            exclude_at_level = feature_spells_by_level.get(str(spell_level), set())
+            spell_name, spell_data = add_class_spell(class_name, spell_level, known_at_level, exclude_at_level)
+            if not spell_name:
+                break
+            learned_spells.append((spell_level, spell_name, spell_data))
+            known_level_spells.add(spell_name)
+    return learned_spells

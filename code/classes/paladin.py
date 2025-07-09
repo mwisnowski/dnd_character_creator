@@ -17,7 +17,8 @@ PALADIN_CLASS: Dict[str, Any] = {
         'tools': [],
         'skills': [
             'Athletics', 'Insight', 'Intimidation', 'Medicine', 'Persuasion', 'Religion'
-        ]
+        ],
+        "skills_choose": 2
     },
     'starting_equipment': [
         [

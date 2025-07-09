@@ -1,6 +1,6 @@
 """
-D&D 5e ability score rolling and assignment utilities.
-Provides functions for rolling, assigning, and calculating modifiers for ability scores.
+D&D 5e character statistics utilities.
+Provides functions for ability scores, modifiers, HP, AC, and other stat calculations.
 """
 
 import inquirer

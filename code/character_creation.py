@@ -6,7 +6,7 @@ Handles ability scores, species, class, background, and skill calculation.
 from __future__ import annotations
 
 
-from misc.abilities import interactive_ability_assignment, ability_modifier
+from misc.stats import interactive_ability_assignment, ability_modifier
 from misc.backgrounds import select_background
 from misc.skills import calculate_skill_scores
 from misc.backgrounds_utils import parse_equipment_items

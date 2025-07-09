@@ -15,7 +15,8 @@ BARD_CLASS: Dict[str, Any] = {
         'armor': ['Light Armor'],
         'weapons': ['Simple Weapons'],
         'tools': ['Choose 3 Musical Instruments'],
-        'skills': ['Choose any 3 skills']
+        'skills': ['Choose any 3 skills'],
+        "skills_choose": 3
     },
     'starting_equipment': [
         ['Leather Armor', '2 Daggers', 'Musical Instrument of your choice', "Entertainer's Pack", '19 GP'],

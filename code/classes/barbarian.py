@@ -15,7 +15,8 @@ BARBARIAN_CLASS: Dict[str, Any] = {
         'armor': ['Light Armor', 'Medium Armor', 'Shields'],
         'weapons': ['Simple Weapons', 'Martial Weapons'],
         'tools': [],
-        'skills': ['Animal Handling', 'Athletics', 'Intimidation', 'Survival']
+        'skills': ['Animal Handling', 'Athletics', 'Intimidation', 'Survival'],
+        "skills_choose": 2
     },
     'starting_equipment': [['Greataxe', '4 Handaxes', 'Explorer\'s Pack', '15 GP'],
                            ['75 GP']]
