@@ -48,6 +48,9 @@ def choose_class(available_classes):
             choices=class_choices
         ).execute()
         class_data, class_levels, class_features, subclass_dicts = available_classes[class_name]
+        class_hit_die = class_data.get('hit_die', None)
+        if class_hit_die is not None:
+            class_hit_die = f"d{class_hit_die}"
         display_class_tables(class_name, class_levels)
         # New: Allow browsing features before confirmation
         result = browse_class_features_prompt(class_name, class_data, class_levels, class_features, subclass_dicts)
@@ -58,7 +61,7 @@ def choose_class(available_classes):
             default=True
         ).execute()
         if confirm:
-            return class_name, class_data, class_levels
+            return class_name, class_data, class_levels, class_hit_die
         else:
             print("Returning to class selection...")
 
@@ -90,7 +93,7 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
         already_proficient = []
     if known_spells is None:
         known_spells = {}
-    class_name, class_data, class_levels = choose_class(AVAILABLE_CLASSES)
+    class_name, class_data, class_levels, class_hit_die = choose_class(AVAILABLE_CLASSES)
     chosen_skills = choose_proficiencies(class_data, already_proficient)
     equipment, inventory, gold_pieces, silver_pieces, copper_pieces = organize_equipment(class_data)
     class_features = class_levels[current_level].get('features', [])
@@ -145,5 +148,6 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
         'spellcasting_ability': spellcasting_ability,
         'saving_throws': saving_throws,
         'class_feature_spells': class_feature_spells,
+        'class_hit_die': class_hit_die,
         **extra_choices
     }

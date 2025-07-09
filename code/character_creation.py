@@ -6,7 +6,7 @@ Handles ability scores, species, class, background, and skill calculation.
 from __future__ import annotations
 
 
-from misc.stats import interactive_ability_assignment, ability_modifier
+from misc.stats import interactive_ability_assignment, ability_modifier, calc_hp, calc_ac
 from misc.backgrounds import select_background
 from misc.skills import calculate_skill_scores
 from misc.backgrounds_utils import parse_equipment_items
@@ -58,6 +58,7 @@ class charGen:
         experience_points: int = 0,
         gender: str = "N/A",
         age: int = 18,
+        class_hit_die: str = None,  # New field
     ):
         self.name = name
         self.species = species
@@ -70,6 +71,7 @@ class charGen:
         self.experience_points = experience_points
         self.gender = gender
         self.age = age
+        self.class_hit_die = class_hit_die  # Store hit die
         self.proficiency_bonus = get_proficiency_bonus(self.level)
         self.inventory = []
         self.equipment = []
@@ -104,6 +106,7 @@ class charGen:
             "Species Traits": getattr(self, 'species_traits', []),
             "Skill Scores": getattr(self, 'skill_scores', {}),
             "Proficiencies": self.proficiencies,
+            "Class Hit Die": self.class_hit_die,  # Add to dict
         }
 
 
@@ -111,10 +114,36 @@ class charGen:
         char_dict = self.as_dict()
         main_keys = [
             "Name", "Species", "Class", "Background", "Level", "Alignment",
-            "Player Name", "XP", "Gender", "Age"
+            "Player Name", "XP", "Gender", "Age", "Class Hit Die"
         ]
         max_key_len = max(len(k) for k in main_keys)
         lines = [f"{k + ':':<{max_key_len+2}} {char_dict[k]}" for k in main_keys]
+        # Print HP just after Class Hit Die
+        lines.insert(main_keys.index("Class Hit Die") + 1, f"{'HP:':<{max_key_len+2}} {getattr(self, 'hp', 'N/A')}")
+        # --- Armor Class Calculation and Display ---
+        # Find first equipped armor in equipment list
+        equipped_armor = None
+        for item in getattr(self, 'equipment', []):
+            base = item.split(' x ')[0] if ' x ' in item else item
+            if base in LIGHT_ARMOR_DICT or base in MEDIUM_ARMOR_DICT or base in HEAVY_ARMOR_DICT:
+                equipped_armor = base
+                break
+        # Detect shield
+        shield_equipped = any((item.split(' x ')[0] if ' x ' in item else item) in SHIELD_DICT for item in getattr(self, 'equipment', []))
+        # Detect class features for monk/barbarian
+        is_monk = getattr(self, 'class_name', '').lower() == 'monk'
+        is_barbarian = getattr(self, 'class_name', '').lower() == 'barbarian'
+        # Calculate AC
+        ac_val = calc_ac(
+            equipped_armor=equipped_armor,
+            dex_mod=getattr(self, 'dex_mod', 0),
+            con_mod=getattr(self, 'con_mod', 0),
+            wis_mod=getattr(self, 'wis_mod', 0),
+            barbarian=is_barbarian,
+            monk=is_monk,
+            shield=shield_equipped
+        )
+        lines.insert(main_keys.index("Class Hit Die") + 2, f"{'Armor Class:':<{max_key_len+2}} {ac_val}")
 
         # Print Feats Section
         lines.append("Feats:")
@@ -207,13 +236,22 @@ class charGen:
         lines.append("Ability Scores:")
         abilities = char_dict["Ability Scores"]
         saving_throw_profs = getattr(self, 'saving_throw_proficiencies', [])
+        # Map for ability to modifier attribute
+        mod_map = {
+            'Strength': getattr(self, 'str_mod', None),
+            'Dexterity': getattr(self, 'dex_mod', None),
+            'Constitution': getattr(self, 'con_mod', None),
+            'Intelligence': getattr(self, 'int_mod', None),
+            'Wisdom': getattr(self, 'wis_mod', None),
+            'Charisma': getattr(self, 'cha_mod', None),
+        }
         if abilities:
             ability_key_len = max(len(k) for k in abilities)
             for subk, subv in abilities.items():
-                mod = ability_modifier(subv)
-                mod_str = f"+{mod}" if mod > 0 else str(mod)
+                mod = mod_map.get(subk)
+                mod_str = f"+{mod}" if mod is not None and mod > 0 else str(mod) if mod is not None else ""
                 save_prof = " (P)" if subk in saving_throw_profs else ""
-                lines.append(f"  {subk + ':':<{ability_key_len+3}} {subv} ({mod_str}){save_prof}")
+                lines.append(f"  {subk + ':':<{ability_key_len+3}} {subv} {mod_str}{save_prof}")
         else:
             lines.append("  None")
 
@@ -259,6 +297,14 @@ class charGen:
         equipment = getattr(self, 'equipment', []) or [None]
         weapon_profs = self.proficiencies.get('weapons', set())
         armor_profs = self.proficiencies.get('armor', set())
+        # Determine equipped armor for (E) marker
+        equipped_armor = None
+        for item in equipment:
+            if item:
+                base = item.split(' x ')[0] if ' x ' in item else item
+                if base in LIGHT_ARMOR_DICT or base in MEDIUM_ARMOR_DICT or base in HEAVY_ARMOR_DICT:
+                    equipped_armor = base
+                    break
         for item in equipment:
             if item:
                 base = item.split(' x ')[0] if ' x ' in item else item
@@ -282,6 +328,9 @@ class charGen:
                     is_prof = True
                 if is_prof:
                     mark += " (P)"
+                # Add (E) marker if this is the equipped armor
+                if base == equipped_armor:
+                    mark += " (E)"
                 lines.append(f"  - {item}{mark}")
             else:
                 lines.append("  None")
@@ -348,6 +397,7 @@ class charGen:
         self.character_setup()
         self.determine_ability_scores()
         self.choose_background()
+        self.calculate_ability_modifiers()
         self.choose_class()
         self.choose_species()
         self.calculate_skills()
@@ -430,6 +480,7 @@ class charGen:
         result = select_class(current_level=self.level, already_proficient=already_proficient, known_spells=known_spells, character=self)
         if result:
             self.class_name = result['class_name']
+            self.class_hit_die = result.get('class_hit_die')  # <-- Set hit die here
             # Save spellcasting ability if present
             self.spellcasting_ability = result.get('spellcasting_ability')
             # Save saving throw proficiencies if present
@@ -499,6 +550,19 @@ class charGen:
                     self.known_spells[level_key][spell_name] = spell_data
             # Store class feature-granted spells
             self.class_feature_spells = result.get('class_feature_spells', {})
+            # Calculate HP after class and ability scores are set
+            # Extract hit die as int (e.g., from 'd12' to 12)
+            hit_die_val = None
+            if self.class_hit_die:
+                try:
+                    hit_die_val = int(self.class_hit_die.lstrip('dD'))
+                except Exception:
+                    hit_die_val = None
+            con_mod = getattr(self, 'con_mod', 0)
+            self.hp = calc_hp(hit_die_val, con_mod, self.level) if hit_die_val else None
+            if 'Tough' in self.feats:
+                # If the Tough feat is present, increase HP by 2 per level'
+                self.hp = calc_hp(hit_die_val, con_mod, self.level, tough=True) if hit_die_val else None
             print(f"Class selected: {self.class_name}")
         else:
             print("No class selected.")
@@ -551,6 +615,18 @@ class charGen:
             self.ability_scores = interactive_ability_assignment()
         else:
             print(self.ability_scores)
+
+    def calculate_ability_modifiers(self):
+        """
+        Calculates and stores ability modifiers as attributes based on self.ability_scores.
+        """
+        abilities = self.ability_scores or {}
+        self.str_mod = ability_modifier(abilities.get('Strength', 0))
+        self.dex_mod = ability_modifier(abilities.get('Dexterity', 0))
+        self.con_mod = ability_modifier(abilities.get('Constitution', 0))
+        self.int_mod = ability_modifier(abilities.get('Intelligence', 0))
+        self.wis_mod = ability_modifier(abilities.get('Wisdom', 0))
+        self.cha_mod = ability_modifier(abilities.get('Charisma', 0))
 
     def calculate_skills(self):
         """
