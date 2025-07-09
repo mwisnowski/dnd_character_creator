@@ -166,3 +166,8 @@ v 1.00.16
 Branch: cleanup_work
 - Updated README.md to fully reflect scope of project as-is
 - Added requirements.txt based on current requirements
+
+v 1.00.17
+Branch: pdfgen_work
+- Added group of PDF templates for 5e 2024 that are form-fillable
+- Updated README.md to include credits for PDF files
