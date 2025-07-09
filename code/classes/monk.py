@@ -11,15 +11,16 @@ MONK_CLASS: Dict[str, Any] = {
     "hit_die": "d8",
     "saving_throws": ["Strength", "Dexterity"],
     "proficiencies": {
-        "skills": [
-            "Choose 2: Acrobatics, Athletics, History, Insight, Religion, or Stealth"
-        ],
-        "tools": ["Choose one type of Artisan's Tools or Musical Instrument"],
         "weapons": [
             "Simple Weapons",
             "Martial weapons with the Light property"
         ],
         "armor": [],
+        "tools": ["Choose one type of Artisan's Tools or Musical Instrument"],
+        "skills": [
+            "Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"
+        ],
+        "skills_choose": 2
     },
     "starting_equipment": [
         [
@@ -52,10 +53,8 @@ MONK_LEVELS: Dict[int, Dict[str, Any]] = {
     18: {"proficiency_bonus": 6, "features": ["Superior Defense"]},
     19: {"proficiency_bonus": 6, "features": ["Epic Boon"]},
     20: {"proficiency_bonus": 6, "features": ["Body and Mind"]},
-    # Martial Arts/Focus/Unarmored Movement table is separate
 }
 
-# Martial Arts/Focus/Unarmored Movement progression table
 MARTIAL_ARTS: Dict[int, Dict[str, Any]] = {
     1:  {"martial_arts_die": "1d6",  "focus_points": None,  "unarmored_movement": None},
     2:  {"martial_arts_die": "1d6",  "focus_points": 2,     "unarmored_movement": "+10 ft"},

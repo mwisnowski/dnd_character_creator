@@ -171,3 +171,22 @@ v 1.00.17
 Branch: pdfgen_work
 - Added group of PDF templates for 5e 2024 that are form-fillable
 - Updated README.md to include credits for PDF files
+
+v 1.00.18
+Branch: classes_work
+- Renamed abilities.py to stats.py
+  - Prepped implementation of HP, AC, and similar stat calcuations
+- Implement Rogue class
+- class_selection.py:
+  - Added 'skills_chosen' key:value to class tables
+    - Refined skill selection logic to reference value for how many skills to select
+  - Functions moved to class_utils.py:
+    - choose_proficiencies()
+    - organize_equipment()
+    - learn_spell()
+- clas_utils.py:
+  - Functions moved from class_selection.py
+  - Adjusted display_eldritch_knight_spellcasting_table() to be display_subclass_spellcasting_table() to accommodate Arcane Trickster and other similar subclasses
+  - Created display_dict_table() for displaying subclass feature dictionaries - currently only used for Soulknife Rogue, but allows for later implementation
+  - Created display_stat_block() for displaying stat blocks related to class features, such as Beast Master Ranger Primal Companions
+  - Added "Back to Class Selection" when browsing class features to do just that

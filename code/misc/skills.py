@@ -3,7 +3,7 @@ D&D 5e skill definitions and skill score calculation utilities.
 Provides the SKILLS_DICT and functions for calculating skill values.
 """
 
-from misc.abilities import ability_modifier
+from misc.stats import ability_modifier
 
 SKILLS_DICT: dict[str, dict] = {
     'Acrobatics': {

@@ -18,7 +18,8 @@ RANGER_CLASS: Dict[str, Any] = {
         'skills': [
             'Animal Handling', 'Athletics', 'Insight', 'Investigation',
             'Nature', 'Perception', 'Stealth', 'Survival'
-        ]
+        ],
+        "skills_choose": 2
     },
     'starting_equipment': [
         [
@@ -420,15 +421,11 @@ BEAST_MASTER: Dict[Union[str, int], Any] = {
         "A Beast Master forms a mystical bond with a special animal, drawing on primal magic and a deep connection to the natural world."
     ),
     3: {
-        'Primal Companion': [
-            "You magically summon a primal beast, which draws strength from your bond with nature. Choose its stat block: Beast of the Land, Beast of the Sea or Beast of the Sky. You also determine the kind of animal it is, choosing a kind appropriate for the stat block. Whatever beast you choose, it bears primal markings indicating its supernatural origin.\n\n"
+        'Primal Companion': 
+            ("You magically summon a primal beast, which draws strength from your bond with nature. Choose its stat block: Beast of the Land, Beast of the Sea or Beast of the Sky. You also determine the kind of animal it is, choosing a kind appropriate for the stat block. Whatever beast you choose, it bears primal markings indicating its supernatural origin.\n\n"
             "  - The Beast in Combat. In combat, the beast acts during your turn. It can move and use its Reaction on its own, but the only action it takes is the Dodge action unless you take a Bonus Action to command it to take an action in its stat block or some other action. You can also sacrifice one of your attacks when you take the Attack action to command the beast to take the Beast's Strike action. If you have the Incapacitated condition, the beast acts on its own and isn't limited to the Dodge action.\n\n"
             "  - Restoring or Replacing the Beast. If the beast has died within the last hour, you can take a Magic action to touch it and expend a spell slot. The beast returns to life after 1 minute with all its Hit Points restored.\n\n"
-            "Whenever you finish a Long Rest, you can summon a different primal beast, which appears in an unoccupied space within 5 feet of you. You choose its stat block and appearance. If you already have a beast from this feature, the old one vanishes when the new one appears.",
-            BEAST_OF_THE_LAND,
-            BEAST_OF_THE_SEA,
-            BEAST_OF_THE_SKY
-            ]
+            "Whenever you finish a Long Rest, you can summon a different primal beast, which appears in an unoccupied space within 5 feet of you. You choose its stat block and appearance. If you already have a beast from this feature, the old one vanishes when the new one appears.")
         },
     7: {
         'Exceptional Training': (

@@ -15,7 +15,8 @@ CLERIC_CLASS: Dict[str, Any] = {
         'armor': ['Light Armor', 'Medium Armor', 'Shields'],
         'weapons': ['Simple Weapons'],
         'tools': [],
-        'skills': ['History', 'Insight', 'Medicine', 'Persuasion', 'Religion']
+        'skills': ['History', 'Insight', 'Medicine', 'Persuasion', 'Religion'],
+        "skills_choose": 2
     },
     'starting_equipment': [
         ['Chain Shirt', 'Shield', 'Mace', 'Holy Symbol', "Priest's Pack", '7 GP'],

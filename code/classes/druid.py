@@ -20,6 +20,7 @@ DRUID_CLASS: Dict[str, Any] = {
             'Arcana', 'Animal Handling', 'Insight', 'Medicine',
             'Nature', 'Perception', 'Religion', 'Survival',
         ],
+        "skills_choose": 2
     },
     'starting_equipment': [
         [

@@ -1,4 +1,4 @@
 # __init__.py for misc package
 
-from .abilities import *
+from .stats import *
 from .dice_rolling import *
