@@ -159,7 +159,6 @@ class charGen:
         else:
             lines.append("  None")
 
-        # ...existing code for Class Features, Proficiencies, Ability Scores, etc...
         # Print Class Features
         lines.append("Class Features:")
         class_name = getattr(self, 'class_name', None)
@@ -387,6 +386,17 @@ class charGen:
                     lines.append(f"    - {spell}")
         else:
             lines.append("  None")
+        
+        
+        # --- Eldritch Invocations Section ---
+        lines.append("Eldritch Invocations:")
+        eld_inv = getattr(self, 'new_eldritch_invocations', None)
+        if eld_inv:
+            for inv in eld_inv:
+                lines.append(f"  - {inv}")
+        else:
+            lines.append("  None")
+            
         return "\n".join(lines)
         
     def make_character(self):
@@ -481,6 +491,8 @@ class charGen:
         if result:
             self.class_name = result['class_name']
             self.class_hit_die = result.get('class_hit_die')  # <-- Set hit die here
+            # Save Eldritch Invocations if present
+            self.new_eldritch_invocations = result.get('new_eldritch_invocations', [])
             # Save spellcasting ability if present
             self.spellcasting_ability = result.get('spellcasting_ability')
             # Save saving throw proficiencies if present
@@ -642,7 +654,31 @@ class charGen:
         )
 
 if __name__ == "__main__":
-    # Example: Create a character and print details
-    character = charGen()
-    character.make_character()
+    # Simulate a level 2 Warlock
+    character = charGen(
+        name="Testlock",
+        species="Human",
+        class_name="Warlock",
+        background="Acolyte",
+        level=2,
+        ability_scores={
+            "Strength": 8,
+            "Dexterity": 14,
+            "Constitution": 14,
+            "Intelligence": 10,
+            "Wisdom": 12,
+            "Charisma": 16
+        },
+        alignment="Chaotic Good",
+        player_name="Tester",
+        experience_points=300,
+        gender="Any",
+        age=25
+    )
+    # Run the interactive creation process
+    character.choose_background()
+    character.calculate_ability_modifiers()
+    character.choose_class()
+    character.choose_species()
+    character.calculate_skills()
     print("\nCharacter Sheet:\n", character, sep='')

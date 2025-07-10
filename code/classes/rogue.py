@@ -15,7 +15,12 @@ ROGUE_CLASS: Dict[str, Any] = {
         "armor": ["Light Armor"],
         "weapons": [
             "Simple Weapons",
-            "Martial Weapons (Finesse or Light property)"
+            "Rapier"
+            "Scimitar",
+            "Shortsword",
+            "Whip",
+            "Hand Crossbow",
+            "Pistol",
         ],
         "tools": ["Thieves' Tools"],
         "skills": [

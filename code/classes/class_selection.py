@@ -23,9 +23,11 @@ from .class_utils import (
     browse_class_features_prompt,
     display_class_tables,
     handle_class_feature_spells,
+    handle_class_feature_choices,
     choose_proficiencies,
     organize_equipment,
-    learn_spell
+    learn_spell,
+    learn_invocation,
 )
 
 def choose_class(available_classes):
@@ -65,7 +67,7 @@ def choose_class(available_classes):
         else:
             print("Returning to class selection...")
 
-def select_class(current_level=1, already_proficient=None, known_spells=None, character=None):
+def select_class(current_level=1, already_proficient=None, known_spells=None, known_invocations=None, character=None):
     """
     Main entry point for class selection and setup.
 
@@ -93,6 +95,8 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
         already_proficient = []
     if known_spells is None:
         known_spells = {}
+    if known_invocations is None:
+        known_invocations = {}
     class_name, class_data, class_levels, class_hit_die = choose_class(AVAILABLE_CLASSES)
     chosen_skills = choose_proficiencies(class_data, already_proficient)
     equipment, inventory, gold_pieces, silver_pieces, copper_pieces = organize_equipment(class_data)
@@ -100,6 +104,7 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
     new_spells = []
     extra_choices = {}
     spellcasting_ability = None
+    new_invocations = []
     # Gather proficiencies from class_data
     proficiencies = {'weapons': set(), 'armor': set(), 'tools': set()}
     class_profs = class_data.get('proficiencies', {})
@@ -115,11 +120,10 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
     # Handle class feature-granted spells (e.g., Ranger's Favored Enemy)
     class_feature_spells = handle_class_feature_spells(class_name, class_data, class_features)
 
-    # Spellcasting feature spel llearning
+    # Spellcasting feature spell learning
     if current_level in class_levels:
         spellcasting = class_levels[current_level].get('spellcasting')
         # Handle all class-specific feature choices in class_utils
-        from .class_utils import handle_class_feature_choices
         extra_choices = handle_class_feature_choices(class_name, class_data, class_features, known_spells, character=character)
         if spellcasting:
             # Try to extract spellcasting ability from the Spellcasting feature description
@@ -134,6 +138,24 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
                     spellcasting_ability = match.group(1)
             # Use known_spells only
             new_spells = learn_spell(class_name, spellcasting, known_spells, class_feature_spells)
+    
+    # Eldritch invocation
+    if current_level in class_levels:
+        eldritch_invocations = class_levels[current_level].get('eldritch_invocations', 0)
+        if eldritch_invocations > 0:
+            # Gather known cantrips for prerequisite checking
+            cantrips = set()
+            if known_spells:
+                cantrips = set(known_spells.get('Cantrips', {}).keys())
+            # Gather known invocations so far
+            known_invocations_set = set(known_invocations) if known_invocations else set()
+            new_invocations = learn_invocation(
+                eldritch_invocations,
+                known_invocations_set,
+                character_level=current_level,
+                known_cantrips=cantrips
+            )
+    
     return {
         'class_name': class_name,
         'chosen_skills': chosen_skills,
@@ -149,5 +171,6 @@ def select_class(current_level=1, already_proficient=None, known_spells=None, ch
         'saving_throws': saving_throws,
         'class_feature_spells': class_feature_spells,
         'class_hit_die': class_hit_die,
+        'new_eldritch_invocations': new_invocations,
         **extra_choices
     }

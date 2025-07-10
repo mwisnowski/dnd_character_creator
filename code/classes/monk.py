@@ -13,7 +13,10 @@ MONK_CLASS: Dict[str, Any] = {
     "proficiencies": {
         "weapons": [
             "Simple Weapons",
-            "Martial weapons with the Light property"
+            "Scimitar",
+            "Shortsword",
+            "Hand Crossbow",
+            "Pistol",
         ],
         "armor": [],
         "tools": ["Choose one type of Artisan's Tools or Musical Instrument"],

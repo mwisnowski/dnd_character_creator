@@ -146,15 +146,18 @@ Branch: cleanup_work
 - Other general code-hygeine and DRY practices application
 
 v 1.00.14
+07/07/2025
 Branch: classes_work
 - Implemented feat addition
 - Implemented adding Fighter FIGHTING_STYLE_FEAT selection
 
 v 1.00.14
+07/07/2025
 Branch: classes_work
 - Added Ranger class dict, still needs to be implemented
 
 v 1.00.15
+07/08/2025
 Branch: classes_work
 - Implemented Ranger class in class_selection
 - Setup printing of Beast Master Primal Companion
@@ -163,16 +166,18 @@ Branch: classes_work
   - Added to spells_known printout of character sheet
 
 v 1.00.16
+07/08/2025
 Branch: cleanup_work
 - Updated README.md to fully reflect scope of project as-is
 - Added requirements.txt based on current requirements
 
-v 1.00.17
+v 1.00.1707/09/2025
 Branch: pdfgen_work
 - Added group of PDF templates for 5e 2024 that are form-fillable
 - Updated README.md to include credits for PDF files
 
 v 1.00.18
+07/09/2025
 Branch: classes_work
 - Renamed abilities.py to stats.py
   - Prepped implementation of HP, AC, and similar stat calcuations
@@ -192,6 +197,7 @@ Branch: classes_work
   - Added "Back to Class Selection" when browsing class features to do just that
 
 v 1.00.19
+07/09/2025
 Branch: stats_work
 - stats.py:
   - Added calc_hp() for HP calculation
@@ -204,3 +210,31 @@ Branch: stats_work
   - Added marker to indicate armor is equipped
   - Added AC calcuation
   - Broke determine_ability_scores into two seperate functions (determine_ability_scores and calculate_ability_modifiers)
+
+v 1.00.20
+07/10/2025
+Branch: classes_work
+- monk.py, rogue.py:
+  - Updated martial weapon proficiencies to just list the granted weapon proficiencies
+- sorcery.py:
+  - Fleshed out class dictionaries for Worcerer class implementation
+- clas_utils.py:
+  - Implemented Sorcerer class
+  - Updated/fixed display_dict_table() so that if values are strings, it displays a two-column table
+  - Removed unnecessary extra step in displaying Beast Master Primal Companion
+
+v 1.00.21
+07/10/2025
+Branch: classes_work
+- invocations.py:
+  - Created file
+  - Added all Eldritch Invocatios from PHB
+  - Implemented function for choosing and learning invocations
+- warlock.py
+  - Fleshed out class dictionaries for Warlock class implementation
+- sorcerer.py
+  - Fixed spellcasting not being a subdictionary, causing spells to not be selectable during character creation
+- class_utils.py
+  - Implemented Warlock class
+- class_selection.py
+  - Implemented learning invocations

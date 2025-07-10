@@ -10,20 +10,63 @@ from prettytable import PrettyTable, ALL
 # Local imports
 from misc.feats_utils import add_feat
 from misc.feats import FIGHTING_STYLE_FEATS
+from misc.invocations import ELDRITCH_INVOCATIONS, choose_invocation, add_invocation
 from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
 from spells.spells import add_class_spell
-from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, PATH_OF_THE_BERSERKER, PATH_OF_THE_WILD_HEART, PATH_OF_THE_WORLD_TREE, PATH_OF_THE_ZEALOT
-from .bard import BARD_CLASS, BARD_LEVELS, BARD_FEATURES, COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, COLLEGE_OF_VALOR
-from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
-from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, CIRCLE_OF_THE_STARS
-from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR, ELDRITCH_KNIGHT_SPELLCASTING
-from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
-from .paladin import PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, OATH_OF_VENGEANCE
-from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA, BEAST_OF_THE_SKY
+from .barbarian import (
+    BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES,
+    PATH_OF_THE_BERSERKER, PATH_OF_THE_WILD_HEART, 
+    PATH_OF_THE_WORLD_TREE, PATH_OF_THE_ZEALOT
+)
+from .bard import (
+    BARD_CLASS, BARD_LEVELS, BARD_FEATURES,
+    COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, 
+    COLLEGE_OF_VALOR
+)
+from .cleric import (
+    CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES,
+    LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
+)
+from .druid import (
+    DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES,
+    CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, 
+    CIRCLE_OF_THE_STARS
+)
+from .fighter import (
+    FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES,
+    BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR, 
+    ELDRITCH_KNIGHT_SPELLCASTING
+)
+from .monk import (
+    MONK_CLASS, MONK_LEVELS, MONK_FEATURES,
+    WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, 
+    WAY_OF_THE_OPEN_HAND
+)
+from .paladin import (
+    PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES,
+    OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, 
+    OATH_OF_VENGEANCE
+)
+from .ranger import (
+    RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES,
+    BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER,
+    HUNTER, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA,
+    BEAST_OF_THE_SKY, FEYWILD_GIFTS
+)
 from .rogue import (
     ROGUE_CLASS, ROGUE_LEVELS, ROGUE_FEATURES,
     ARCANE_TRICKSTER, ARCANE_TRICKSTER_SPELLCASTING,
     ASSASSIN, SOULKNIFE, SOULKNIFE_ENERGY_DICE, THIEF
+)
+from .sorcerer import (
+    SORCERER_CLASS, SORCERER_LEVELS, SORCERER_FEATURES,
+    ABERRANT_SORCERY, CLOCKWORK_SORCERY, DRACONIC_SORCERY,
+    WILD_MAGIC_SORCERY, WILD_MAGIC_SURGE_TABLE, MANIFESTATIONS_OF_ORDER
+)
+from .warlock import (
+    WARLOCK_CLASS, WARLOCK_LEVELS, WARLOCK_FEATURES,
+    ARCHFEY_PATRON, CELESTIAL_PATRON, FIEND_PATRON,
+    GREAT_OLD_ONE_PATRON
 )
 
 # --- AVAILABLE_CLASSES: Central registry of all supported D&D classes and their data ---
@@ -80,6 +123,18 @@ AVAILABLE_CLASSES = {
         'Soulknife': SOULKNIFE,
         'Thief': THIEF,
     }),
+    'Sorcerer': (SORCERER_CLASS, SORCERER_LEVELS, SORCERER_FEATURES, {
+        'Aberrant Sorcery': ABERRANT_SORCERY,
+        'Clockwork Sorcery': CLOCKWORK_SORCERY,
+        'Draconic Sorcery': DRACONIC_SORCERY,
+        'Wild Magic Sorcery': WILD_MAGIC_SORCERY,
+    }),
+    'Warlock': (WARLOCK_CLASS, WARLOCK_LEVELS, WARLOCK_FEATURES, {
+        'Archfey Patron': ARCHFEY_PATRON,
+        'Celestial Patron': CELESTIAL_PATRON,
+        'Fiend Patron': FIEND_PATRON,
+        'Great Old One Patron': GREAT_OLD_ONE_PATRON
+    })
 }
 
 def handle_class_feature_choices(class_name, class_data, class_features, known_spells, character=None):
@@ -355,27 +410,41 @@ def display_dict_table(subclass_name: str, subclass_dict: dict, feature_name: st
     Display a table for any dict-of-dicts, extracting field names and row values dynamically.
     Args:
         subclass_name (str): The name of the subclass or table.
-        subclass_dict (dict): The data dictionary (keys: int/str, values: dict).
+        subclass_dict (dict): The data dictionary (keys: int/str, values: dict or str).
         feature_name (str, optional): The feature this table is for (e.g., 'Energy Dice').
     """
     if not subclass_dict:
         print(f"\n{subclass_name}: No data to display.")
         return
-    # Get all possible field names from all rows
-    field_names = set()
-    for row in subclass_dict.values():
-        if isinstance(row, dict):
+    # If all values are dicts, show as multi-column table
+    if all(isinstance(row, dict) for row in subclass_dict.values()):
+        field_names = set()
+        for row in subclass_dict.values():
             field_names.update(row.keys())
-    field_names = ["Level"] + sorted(field_names)
-    table = PrettyTable()
-    table.field_names = ["Level"] + [fn.replace('_', ' ').title() for fn in field_names[1:]]
-    table.align = "l"
-    for lvl in sorted(subclass_dict.keys()):
-        row = subclass_dict[lvl]
-        row_data = [lvl]
-        for fn in field_names[1:]:
-            row_data.append(row.get(fn, "-"))
-        table.add_row(row_data)
+        field_names = ["Level"] + sorted(field_names)
+        table = PrettyTable()
+        table.field_names = ["Level"] + [fn.replace('_', ' ').title() for fn in field_names[1:]]
+        table.align = "l"
+        for lvl in sorted(subclass_dict.keys()):
+            row = subclass_dict[lvl]
+            row_data = [lvl]
+            for fn in field_names[1:]:
+                row_data.append(row.get(fn, "-"))
+            table.add_row(row_data)
+    elif all(isinstance(row, str) for row in subclass_dict.values()):
+        # If all values are strings, show as two-column table (e.g., Wild Magic Surge, Manifestations, Feywild Gifts)
+        table = PrettyTable()
+        table.field_names = ["Key", "Description"]
+        table.align = "l"
+        for k in sorted(subclass_dict.keys()):
+            table.add_row([k, subclass_dict[k]])
+    else:
+        # Fallback: show as key-value table
+        table = PrettyTable()
+        table.field_names = ["Key", "Value"]
+        table.align = "l"
+        for k, v in subclass_dict.items():
+            table.add_row([k, v])
     title = f"\n{subclass_name}"
     if feature_name:
         title = f"{feature_name} Table:"
@@ -569,14 +638,22 @@ def browse_class_features_prompt(class_name: str, class_data: dict, class_levels
                         subclass_dict = ARCANE_TRICKSTER_SPELLCASTING
                     display_subclass_spellcasting_table(subclass_dict, subclass_choice)
                 
+                # Special handling for Ranger's Feywild Gifts
+                if class_name == 'Ranger' and subclass_choice == 'Fey Wanderer':
+                    display_dict_table(subclass_choice, FEYWILD_GIFTS, 'Feywild Gifts')
+                
                 # Special handling for Soulknife subclass
                 if class_name == 'Rogue' and subclass_choice == 'Soulknife':
-                    subclass_dict = SOULKNIFE_ENERGY_DICE
-                    display_dict_table(subclass_choice, subclass_dict, 'Soulknife Energy Dice')
+                    display_dict_table(subclass_choice, SOULKNIFE_ENERGY_DICE, 'Soulknife Energy Dice')
                 
-                # Special handling for Ranger > Beast Master companion tables
-                # (Moved logic to feature selection below)
+                # Special handling for Wild Magic Sorcery
+                if class_name == 'Sorcerer' and subclass_choice == 'Wild Magic Sorcery':
+                    display_dict_table(subclass_choice, WILD_MAGIC_SURGE_TABLE, 'Wild Magic Surges')
                 
+                # Special handling for Clockwork Sorcery
+                if class_name == 'Sorcerer' and subclass_choice == 'Clockwork Sorcery':
+                    display_dict_table(subclass_choice, MANIFESTATIONS_OF_ORDER, 'Manifestations of Order')
+
                 feature_keys = [k for k in subclass.keys() if k != 'description']
                 if feature_keys and all(isinstance(k, int) for k in feature_keys):
                     while True:
@@ -605,27 +682,22 @@ def browse_class_features_prompt(class_name: str, class_data: dict, class_levels
                                 print_feature_desc(desc, title=f"{subclass_choice} {lvl} - {feat}")
                                 # Special handling: If Beast Master 3 - Primal Companion, prompt to view stat block
                                 if class_name == 'Ranger' and subclass_choice == 'Beast Master' and lvl == 3 and feat == 'Primal Companion':
-                                    primal_choice = inquirer.select(
-                                        message="View Primal Companion stat block?",
-                                        choices=["Primal Companion", "Back"]
-                                    ).execute()
-                                    if primal_choice == "Primal Companion":
-                                        beast_options = [
-                                            ('Beast of the Land', BEAST_OF_THE_LAND),
-                                            ('Beast of the Sea', BEAST_OF_THE_SEA),
-                                            ('Beast of the Sky', BEAST_OF_THE_SKY)
-                                        ]
-                                        beast_names = [b[0] for b in beast_options]
-                                        while True:
-                                            beast_select = inquirer.select(
-                                                message="Select your Beast Companion type:",
-                                                choices=beast_names + ['Back']
-                                            ).execute()
-                                            if beast_select == 'Back':
-                                                break
-                                            beast_dict = dict(beast_options)[beast_select]
-                                            display_stat_block(beast_dict, title=beast_select)
-                                            inquirer.text(message="Press Enter to return.").execute()
+                                    beast_options = [
+                                        ('Beast of the Land', BEAST_OF_THE_LAND),
+                                        ('Beast of the Sea', BEAST_OF_THE_SEA),
+                                        ('Beast of the Sky', BEAST_OF_THE_SKY)
+                                    ]
+                                    beast_names = [b[0] for b in beast_options]
+                                    while True:
+                                        beast_select = inquirer.select(
+                                            message="Select your Beast Companion type:",
+                                            choices=beast_names + ['Back']
+                                        ).execute()
+                                        if beast_select == 'Back':
+                                            break
+                                        beast_dict = dict(beast_options)[beast_select]
+                                        display_stat_block(beast_dict, title=beast_select)
+                                        inquirer.text(message="Press Enter to return.").execute()
                         else:
                             desc = subclass[lvl]
                             print_feature_desc(desc, title=f"{subclass_choice} {lvl}")
@@ -801,12 +873,19 @@ def learn_spell(class_name, spellcasting, known_spells, class_feature_spells=Non
     if spells_to_learn:
         # Gather all available spell levels
         available_levels = []
-        for key in spellcasting.get('spell_slots', {}).keys():
-            try:
-                lvl_num = int(key.split()[-1])
-                available_levels.append(lvl_num)
-            except (ValueError, IndexError):
-                continue
+        # Warlocks just have global/leveled spell slots vs specific level slots
+        if class_name == 'Warlock':
+            lvl_num = spellcasting.get('slot_level', 0)
+            if lvl_num > 0:
+                for i in range(1, lvl_num + 1):
+                    available_levels.append(i)
+        else:
+            for key in spellcasting.get('spell_slots', {}).keys():
+                try:
+                    lvl_num = int(key.split()[-1])
+                    available_levels.append(lvl_num)
+                except (ValueError, IndexError):
+                    continue
         available_levels = sorted(set(available_levels))
         # Gather all known spells across all available levels
         known_level_spells = set()
@@ -830,3 +909,38 @@ def learn_spell(class_name, spellcasting, known_spells, class_feature_spells=Non
             learned_spells.append((spell_level, spell_name, spell_data))
             known_level_spells.add(spell_name)
     return learned_spells
+
+def learn_invocation(eldritch_invocations, known_invocations, character_level=None, known_cantrips=None):
+    """
+    Handles the process of learning Eldritch Invocations for Warlocks.
+    Prompts the user to select invocations from available options, ensuring they are not already known and prerequisites are met.
+    Returns a list of newly learned invocations.
+    """
+    known_invocations = set(known_invocations) if not isinstance(known_invocations, set) else known_invocations
+    num_to_learn = eldritch_invocations - len(known_invocations)
+    if num_to_learn <= 0:
+        return []
+    invocations_gained = []
+    available_invocations = [name for name in ELDRITCH_INVOCATIONS.keys() if name not in known_invocations]
+    while len(invocations_gained) < num_to_learn and available_invocations:
+        gained = add_invocation(
+            character=None,
+            available_invocations=available_invocations,
+            character_level=character_level,
+            known_cantrips=known_cantrips,
+            known_invocations=known_invocations
+        )
+        if gained:
+            gained_list = gained if isinstance(gained, list) else [gained]
+            for inv in gained_list:
+                if len(invocations_gained) >= num_to_learn:
+                    break
+                inv_name = inv if isinstance(inv, str) else inv.get('name') or inv.get('feat') or next(iter(inv.keys()), None)
+                if inv_name and inv_name not in known_invocations:
+                    invocations_gained.append(inv_name)
+                    known_invocations.add(inv_name)
+            available_invocations = [inv for inv in ELDRITCH_INVOCATIONS.keys() if inv not in known_invocations]
+        else:
+            break
+    return invocations_gained
+
