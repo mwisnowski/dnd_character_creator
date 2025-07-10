@@ -468,10 +468,9 @@ FEY_WANDERER: Dict[Union[str, int], Any] = {
             "When you reach a Ranger level specified in the Fey Wanderer spells table, you thereafter always have the listed spells prepared.\n\n"
             "Fey Wanderer Spells\nRanger Level  Spell\n3  Charm Person\n5  Misty Step\n9  Summon Fey\n13 Dimension Door\n17 Mislead"
         ),
-        'Feywild Gift': [
-            "You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly.",
-            FEYWILD_GIFTS
-        ],
+        'Feywild Gift': (
+            "You also possess a fey blessing. Choose it from the Feywild Gifts table or determine it randomly."
+        ),
         'Otherworldly Glamour': (
             "Whenever you make a Charisma check, you gain a bonus to the check equal to your Wisdom modifier (Minimum of +1).\n\n"
             "You also gain proficiency in one of these skills of your choice: Deception, Performance, or Persuasion."

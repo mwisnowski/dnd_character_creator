@@ -19,12 +19,13 @@ from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND
 from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR, ELDRITCH_KNIGHT_SPELLCASTING
 from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
 from .paladin import PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, OATH_OF_VENGEANCE
-from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA, BEAST_OF_THE_SKY
+from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA, BEAST_OF_THE_SKY, FEYWILD_GIFTS
 from .rogue import (
     ROGUE_CLASS, ROGUE_LEVELS, ROGUE_FEATURES,
     ARCANE_TRICKSTER, ARCANE_TRICKSTER_SPELLCASTING,
     ASSASSIN, SOULKNIFE, SOULKNIFE_ENERGY_DICE, THIEF
 )
+from .sorcerer import (SORCERER_CLASS, SORCERER_LEVELS, SORCERER_FEATURES, FONT_OF_MAGIC, ABERRANT_SORCERY, CLOCKWORK_SORCERY, DRACONIC_SORCERY, WILD_MAGIC_SORCERY, WILD_MAGIC_SURGE_TABLE, MANIFESTATIONS_OF_ORDER)
 
 # --- AVAILABLE_CLASSES: Central registry of all supported D&D classes and their data ---
 AVAILABLE_CLASSES = {
@@ -79,6 +80,12 @@ AVAILABLE_CLASSES = {
         'Assassin': ASSASSIN,
         'Soulknife': SOULKNIFE,
         'Thief': THIEF,
+    }),
+    'Sorcerer': (SORCERER_CLASS, SORCERER_LEVELS, SORCERER_FEATURES, {
+        'Aberrant Sorcery': ABERRANT_SORCERY,
+        'Clockwork Sorcery': CLOCKWORK_SORCERY,
+        'Draconic Sorcery': DRACONIC_SORCERY,
+        'Wild Magic Sorcery': WILD_MAGIC_SORCERY,
     }),
 }
 
@@ -355,27 +362,41 @@ def display_dict_table(subclass_name: str, subclass_dict: dict, feature_name: st
     Display a table for any dict-of-dicts, extracting field names and row values dynamically.
     Args:
         subclass_name (str): The name of the subclass or table.
-        subclass_dict (dict): The data dictionary (keys: int/str, values: dict).
+        subclass_dict (dict): The data dictionary (keys: int/str, values: dict or str).
         feature_name (str, optional): The feature this table is for (e.g., 'Energy Dice').
     """
     if not subclass_dict:
         print(f"\n{subclass_name}: No data to display.")
         return
-    # Get all possible field names from all rows
-    field_names = set()
-    for row in subclass_dict.values():
-        if isinstance(row, dict):
+    # If all values are dicts, show as multi-column table
+    if all(isinstance(row, dict) for row in subclass_dict.values()):
+        field_names = set()
+        for row in subclass_dict.values():
             field_names.update(row.keys())
-    field_names = ["Level"] + sorted(field_names)
-    table = PrettyTable()
-    table.field_names = ["Level"] + [fn.replace('_', ' ').title() for fn in field_names[1:]]
-    table.align = "l"
-    for lvl in sorted(subclass_dict.keys()):
-        row = subclass_dict[lvl]
-        row_data = [lvl]
-        for fn in field_names[1:]:
-            row_data.append(row.get(fn, "-"))
-        table.add_row(row_data)
+        field_names = ["Level"] + sorted(field_names)
+        table = PrettyTable()
+        table.field_names = ["Level"] + [fn.replace('_', ' ').title() for fn in field_names[1:]]
+        table.align = "l"
+        for lvl in sorted(subclass_dict.keys()):
+            row = subclass_dict[lvl]
+            row_data = [lvl]
+            for fn in field_names[1:]:
+                row_data.append(row.get(fn, "-"))
+            table.add_row(row_data)
+    elif all(isinstance(row, str) for row in subclass_dict.values()):
+        # If all values are strings, show as two-column table (e.g., Wild Magic Surge, Manifestations, Feywild Gifts)
+        table = PrettyTable()
+        table.field_names = ["Key", "Description"]
+        table.align = "l"
+        for k in sorted(subclass_dict.keys()):
+            table.add_row([k, subclass_dict[k]])
+    else:
+        # Fallback: show as key-value table
+        table = PrettyTable()
+        table.field_names = ["Key", "Value"]
+        table.align = "l"
+        for k, v in subclass_dict.items():
+            table.add_row([k, v])
     title = f"\n{subclass_name}"
     if feature_name:
         title = f"{feature_name} Table:"
@@ -569,14 +590,22 @@ def browse_class_features_prompt(class_name: str, class_data: dict, class_levels
                         subclass_dict = ARCANE_TRICKSTER_SPELLCASTING
                     display_subclass_spellcasting_table(subclass_dict, subclass_choice)
                 
+                # Special handling for Ranger's Feywild Gifts
+                if class_name == 'Ranger' and subclass_choice == 'Fey Wanderer':
+                    display_dict_table(subclass_choice, FEYWILD_GIFTS, 'Feywild Gifts')
+                
                 # Special handling for Soulknife subclass
                 if class_name == 'Rogue' and subclass_choice == 'Soulknife':
-                    subclass_dict = SOULKNIFE_ENERGY_DICE
-                    display_dict_table(subclass_choice, subclass_dict, 'Soulknife Energy Dice')
+                    display_dict_table(subclass_choice, SOULKNIFE_ENERGY_DICE, 'Soulknife Energy Dice')
                 
-                # Special handling for Ranger > Beast Master companion tables
-                # (Moved logic to feature selection below)
+                # Special handling for Wild Magic Sorcery
+                if class_name == 'Sorcerer' and subclass_choice == 'Wild Magic Sorcery':
+                    display_dict_table(subclass_choice, WILD_MAGIC_SURGE_TABLE, 'Wild Magic Surges')
                 
+                # Special handling for Clockwork Sorcery
+                if class_name == 'Sorcerer' and subclass_choice == 'Clockwork Sorcery':
+                    display_dict_table(subclass_choice, MANIFESTATIONS_OF_ORDER, 'Manifestations of Order')
+
                 feature_keys = [k for k in subclass.keys() if k != 'description']
                 if feature_keys and all(isinstance(k, int) for k in feature_keys):
                     while True:
@@ -605,27 +634,22 @@ def browse_class_features_prompt(class_name: str, class_data: dict, class_levels
                                 print_feature_desc(desc, title=f"{subclass_choice} {lvl} - {feat}")
                                 # Special handling: If Beast Master 3 - Primal Companion, prompt to view stat block
                                 if class_name == 'Ranger' and subclass_choice == 'Beast Master' and lvl == 3 and feat == 'Primal Companion':
-                                    primal_choice = inquirer.select(
-                                        message="View Primal Companion stat block?",
-                                        choices=["Primal Companion", "Back"]
-                                    ).execute()
-                                    if primal_choice == "Primal Companion":
-                                        beast_options = [
-                                            ('Beast of the Land', BEAST_OF_THE_LAND),
-                                            ('Beast of the Sea', BEAST_OF_THE_SEA),
-                                            ('Beast of the Sky', BEAST_OF_THE_SKY)
-                                        ]
-                                        beast_names = [b[0] for b in beast_options]
-                                        while True:
-                                            beast_select = inquirer.select(
-                                                message="Select your Beast Companion type:",
-                                                choices=beast_names + ['Back']
-                                            ).execute()
-                                            if beast_select == 'Back':
-                                                break
-                                            beast_dict = dict(beast_options)[beast_select]
-                                            display_stat_block(beast_dict, title=beast_select)
-                                            inquirer.text(message="Press Enter to return.").execute()
+                                    beast_options = [
+                                        ('Beast of the Land', BEAST_OF_THE_LAND),
+                                        ('Beast of the Sea', BEAST_OF_THE_SEA),
+                                        ('Beast of the Sky', BEAST_OF_THE_SKY)
+                                    ]
+                                    beast_names = [b[0] for b in beast_options]
+                                    while True:
+                                        beast_select = inquirer.select(
+                                            message="Select your Beast Companion type:",
+                                            choices=beast_names + ['Back']
+                                        ).execute()
+                                        if beast_select == 'Back':
+                                            break
+                                        beast_dict = dict(beast_options)[beast_select]
+                                        display_stat_block(beast_dict, title=beast_select)
+                                        inquirer.text(message="Press Enter to return.").execute()
                         else:
                             desc = subclass[lvl]
                             print_feature_desc(desc, title=f"{subclass_choice} {lvl}")
