@@ -211,14 +211,30 @@ Branch: stats_work
   - Added AC calcuation
   - Broke determine_ability_scores into two seperate functions (determine_ability_scores and calculate_ability_modifiers)
 
-  v 1.00.20
+v 1.00.20
 07/10/2025
 Branch: classes_work
 - monk.py, rogue.py:
   - Updated martial weapon proficiencies to just list the granted weapon proficiencies
 - sorcery.py:
-  - Fleshed out class dictionaries for sorcerer class implementation
+  - Fleshed out class dictionaries for Worcerer class implementation
 - clas_utils.py:
   - Implemented Sorcerer class
   - Updated/fixed display_dict_table() so that if values are strings, it displays a two-column table
   - Removed unnecessary extra step in displaying Beast Master Primal Companion
+
+v 1.00.21
+07/10/2025
+Branch: classes_work
+- invocations.py:
+  - Created file
+  - Added all Eldritch Invocatios from PHB
+  - Implemented function for choosing and learning invocations
+- warlock.py
+  - Fleshed out class dictionaries for Warlock class implementation
+- sorcerer.py
+  - Fixed spellcasting not being a subdictionary, causing spells to not be selectable during character creation
+- class_utils.py
+  - Implemented Warlock class
+- class_selection.py
+  - Implemented learning invocations

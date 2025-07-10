@@ -10,22 +10,64 @@ from prettytable import PrettyTable, ALL
 # Local imports
 from misc.feats_utils import add_feat
 from misc.feats import FIGHTING_STYLE_FEATS
+from misc.invocations import ELDRITCH_INVOCATIONS, choose_invocation, add_invocation
 from equipment.weapons_dict import SIMPLE_WEAPONS_DICT, MARTIAL_WEAPONS_DICT
 from spells.spells import add_class_spell
-from .barbarian import BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES, PATH_OF_THE_BERSERKER, PATH_OF_THE_WILD_HEART, PATH_OF_THE_WORLD_TREE, PATH_OF_THE_ZEALOT
-from .bard import BARD_CLASS, BARD_LEVELS, BARD_FEATURES, COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, COLLEGE_OF_VALOR
-from .cleric import CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES, LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
-from .druid import DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES, CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, CIRCLE_OF_THE_STARS
-from .fighter import FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES, BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR, ELDRITCH_KNIGHT_SPELLCASTING
-from .monk import MONK_CLASS, MONK_LEVELS, MONK_FEATURES, WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, WAY_OF_THE_OPEN_HAND
-from .paladin import PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES, OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, OATH_OF_VENGEANCE
-from .ranger import RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES, BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER, HUNTER, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA, BEAST_OF_THE_SKY, FEYWILD_GIFTS
+from .barbarian import (
+    BARBARIAN_CLASS, BARBARIAN_LEVELS, BARBARIAN_FEATURES,
+    PATH_OF_THE_BERSERKER, PATH_OF_THE_WILD_HEART, 
+    PATH_OF_THE_WORLD_TREE, PATH_OF_THE_ZEALOT
+)
+from .bard import (
+    BARD_CLASS, BARD_LEVELS, BARD_FEATURES,
+    COLLEGE_OF_DANCE, COLLEGE_OF_GLAMOUR, COLLEGE_OF_LORE, 
+    COLLEGE_OF_VALOR
+)
+from .cleric import (
+    CLERIC_CLASS, CLERIC_LEVELS, CLERIC_FEATURES,
+    LIFE_DOMAIN, LIGHT_DOMAIN, WAR_DOMAIN
+)
+from .druid import (
+    DRUID_CLASS, DRUID_LEVELS, DRUID_FEATURES,
+    CIRCLE_OF_THE_LAND, CIRCLE_OF_THE_MOON, CIRCLE_OF_THE_SEA, 
+    CIRCLE_OF_THE_STARS
+)
+from .fighter import (
+    FIGHTER_CLASS, FIGHTER_LEVELS, FIGHTER_FEATURES,
+    BATTLE_MASTER, CHAMPION, ELDRITCH_KNIGHT, PSI_WARRIOR, 
+    ELDRITCH_KNIGHT_SPELLCASTING
+)
+from .monk import (
+    MONK_CLASS, MONK_LEVELS, MONK_FEATURES,
+    WARRIOR_OF_MERCY, WAY_OF_SHADOW, WAY_OF_THE_ELEMENTS, 
+    WAY_OF_THE_OPEN_HAND
+)
+from .paladin import (
+    PALADIN_CLASS, PALADIN_LEVELS, PALADIN_FEATURES,
+    OATH_OF_DEVOTION, OATH_OF_THE_ANCIENTS, 
+    OATH_OF_VENGEANCE
+)
+from .ranger import (
+    RANGER_CLASS, RANGER_LEVELS, RANGER_FEATURES,
+    BEAST_MASTER, FEY_WANDERER, GLOOM_STALKER,
+    HUNTER, BEAST_OF_THE_LAND, BEAST_OF_THE_SEA,
+    BEAST_OF_THE_SKY, FEYWILD_GIFTS
+)
 from .rogue import (
     ROGUE_CLASS, ROGUE_LEVELS, ROGUE_FEATURES,
     ARCANE_TRICKSTER, ARCANE_TRICKSTER_SPELLCASTING,
     ASSASSIN, SOULKNIFE, SOULKNIFE_ENERGY_DICE, THIEF
 )
-from .sorcerer import (SORCERER_CLASS, SORCERER_LEVELS, SORCERER_FEATURES, FONT_OF_MAGIC, ABERRANT_SORCERY, CLOCKWORK_SORCERY, DRACONIC_SORCERY, WILD_MAGIC_SORCERY, WILD_MAGIC_SURGE_TABLE, MANIFESTATIONS_OF_ORDER)
+from .sorcerer import (
+    SORCERER_CLASS, SORCERER_LEVELS, SORCERER_FEATURES,
+    ABERRANT_SORCERY, CLOCKWORK_SORCERY, DRACONIC_SORCERY,
+    WILD_MAGIC_SORCERY, WILD_MAGIC_SURGE_TABLE, MANIFESTATIONS_OF_ORDER
+)
+from .warlock import (
+    WARLOCK_CLASS, WARLOCK_LEVELS, WARLOCK_FEATURES,
+    ARCHFEY_PATRON, CELESTIAL_PATRON, FIEND_PATRON,
+    GREAT_OLD_ONE_PATRON
+)
 
 # --- AVAILABLE_CLASSES: Central registry of all supported D&D classes and their data ---
 AVAILABLE_CLASSES = {
@@ -87,6 +129,12 @@ AVAILABLE_CLASSES = {
         'Draconic Sorcery': DRACONIC_SORCERY,
         'Wild Magic Sorcery': WILD_MAGIC_SORCERY,
     }),
+    'Warlock': (WARLOCK_CLASS, WARLOCK_LEVELS, WARLOCK_FEATURES, {
+        'Archfey Patron': ARCHFEY_PATRON,
+        'Celestial Patron': CELESTIAL_PATRON,
+        'Fiend Patron': FIEND_PATRON,
+        'Great Old One Patron': GREAT_OLD_ONE_PATRON
+    })
 }
 
 def handle_class_feature_choices(class_name, class_data, class_features, known_spells, character=None):
@@ -825,12 +873,19 @@ def learn_spell(class_name, spellcasting, known_spells, class_feature_spells=Non
     if spells_to_learn:
         # Gather all available spell levels
         available_levels = []
-        for key in spellcasting.get('spell_slots', {}).keys():
-            try:
-                lvl_num = int(key.split()[-1])
-                available_levels.append(lvl_num)
-            except (ValueError, IndexError):
-                continue
+        # Warlocks just have global/leveled spell slots vs specific level slots
+        if class_name == 'Warlock':
+            lvl_num = spellcasting.get('slot_level', 0)
+            if lvl_num > 0:
+                for i in range(1, lvl_num + 1):
+                    available_levels.append(i)
+        else:
+            for key in spellcasting.get('spell_slots', {}).keys():
+                try:
+                    lvl_num = int(key.split()[-1])
+                    available_levels.append(lvl_num)
+                except (ValueError, IndexError):
+                    continue
         available_levels = sorted(set(available_levels))
         # Gather all known spells across all available levels
         known_level_spells = set()
@@ -854,3 +909,38 @@ def learn_spell(class_name, spellcasting, known_spells, class_feature_spells=Non
             learned_spells.append((spell_level, spell_name, spell_data))
             known_level_spells.add(spell_name)
     return learned_spells
+
+def learn_invocation(eldritch_invocations, known_invocations, character_level=None, known_cantrips=None):
+    """
+    Handles the process of learning Eldritch Invocations for Warlocks.
+    Prompts the user to select invocations from available options, ensuring they are not already known and prerequisites are met.
+    Returns a list of newly learned invocations.
+    """
+    known_invocations = set(known_invocations) if not isinstance(known_invocations, set) else known_invocations
+    num_to_learn = eldritch_invocations - len(known_invocations)
+    if num_to_learn <= 0:
+        return []
+    invocations_gained = []
+    available_invocations = [name for name in ELDRITCH_INVOCATIONS.keys() if name not in known_invocations]
+    while len(invocations_gained) < num_to_learn and available_invocations:
+        gained = add_invocation(
+            character=None,
+            available_invocations=available_invocations,
+            character_level=character_level,
+            known_cantrips=known_cantrips,
+            known_invocations=known_invocations
+        )
+        if gained:
+            gained_list = gained if isinstance(gained, list) else [gained]
+            for inv in gained_list:
+                if len(invocations_gained) >= num_to_learn:
+                    break
+                inv_name = inv if isinstance(inv, str) else inv.get('name') or inv.get('feat') or next(iter(inv.keys()), None)
+                if inv_name and inv_name not in known_invocations:
+                    invocations_gained.append(inv_name)
+                    known_invocations.add(inv_name)
+            available_invocations = [inv for inv in ELDRITCH_INVOCATIONS.keys() if inv not in known_invocations]
+        else:
+            break
+    return invocations_gained
+

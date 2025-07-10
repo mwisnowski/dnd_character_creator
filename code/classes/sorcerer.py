@@ -31,164 +31,213 @@ SORCERER_LEVELS: Dict[int, Dict[str, Any]] = {
     1: {
         'features': ['Spellcasting', 'Innate Sorcery'],
         'sorcery_points': None,
-        'cantrips_known': 4,
-        'spells_prepared': 2,
-        'spells_known': 2,
-        'spell_slots': {'1st': 2}
+        'spellcasting': {
+            'cantrips_known': 4,
+            'spells_prepared': 2,
+            'spells_known': 2,
+            'spell_slots': {'1st': 2}
+        }
     },
     2: {
         'features': ['Font of Magic', 'Metamagic'],
         'sorcery_points': 2,
-        'cantrips_known': 4,
-        'spells_prepared': 4,
-        'spells_known': 4,
-        'spell_slots': {'1st': 3}
+        'spellcasting': {
+            'cantrips_known': 4,
+            'spells_prepared': 4,
+            'spells_known': 4,
+            'spell_slots': {'1st': 3}
+        }
     },
     3: {
         'features': ['Sorcerer Subclass'],
         'sorcery_points': 3,
-        'cantrips_known': 4,
-        'spells_prepared': 6,
-        'spells_known': 6,
-        'spell_slots': {'1st': 4, '2nd': 2}
+        'spellcasting': {
+            'cantrips_known': 4,
+            'spells_prepared': 6,
+            'spells_known': 6,
+            'spell_slots': {'1st': 4, '2nd': 2}
+        }
     },
     4: {
         'features': ['Ability Score Improvement'],
         'sorcery_points': 4,
-        'cantrips_known': 5,
-        'spells_prepared': 7,
-        'spells_known': 7,
-        'spell_slots': {'1st': 4, '2nd': 3}
+        'spellcasting': {
+            'cantrips_known': 5,
+            'spells_prepared': 7,
+            'spells_known': 7,
+            'spell_slots': {'1st': 4, '2nd': 3}
+        }
     },
     5: {
         'features': ['Sorcerous Restoration'],
         'sorcery_points': 5,
-        'cantrips_known': 5,
-        'spells_prepared': 9,
-        'spells_known': 9,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 2}
+        'spellcasting': {
+            'cantrips_known': 5,
+            'spells_prepared': 9,
+            'spells_known': 9,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 2}
+        }
     },
     6: {
         'features': ['Subclass feature'],
         'sorcery_points': 6,
-        'cantrips_known': 5,
-        'spells_prepared': 10,
-        'spells_known': 10,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3}
+        'spellcasting': {
+            'cantrips_known': 5,
+            'spells_prepared': 10,
+            'spells_known': 10,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3}
+        }
     },
     7: {
         'features': ['Sorcery Incarnate'],
         'sorcery_points': 7,
-        'cantrips_known': 5,
-        'spells_prepared': 11,
-        'spells_known': 11,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 1}
+        'spellcasting': {
+            'cantrips_known': 5,
+            'spells_prepared': 11,
+            'spells_known': 11,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 1}
+        }
     },
     8: {
         'features': ['Ability Score Improvement'],
         'sorcery_points': 8,
-        'cantrips_known': 5,
-        'spells_prepared': 12,
-        'spells_known': 12,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 2}
+        'spellcasting': {
+            'cantrips_known': 5,
+            'spells_prepared': 12,
+            'spells_known': 12,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 2}
+        }
     },
     9: {
         'features': [],
         'sorcery_points': 9,
-        'cantrips_known': 5,
-        'spells_prepared': 14,
-        'spells_known': 14,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 1}
+        'spellcasting': {
+            'cantrips_known': 5,
+            'spells_prepared': 14,
+            'spells_known': 14,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 1}
+        }
     },
     10: {
         'features': ['Metamagic'],
         'sorcery_points': 10,
-        'cantrips_known': 6,
-        'spells_prepared': 15,
-        'spells_known': 15,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 15,
+            'spells_known': 15,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2}
+        }
     },
     11: {
         'features': [],
         'sorcery_points': 11,
-        'cantrips_known': 6,
-        'spells_prepared': 16,
-        'spells_known': 16,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 16,
+            'spells_known': 16,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1}
+        }
     },
     12: {
         'features': ['Ability Score Improvement'],
         'sorcery_points': 12,
-        'cantrips_known': 6,
-        'spells_prepared': 16,
-        'spells_known': 16,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 16,
+            'spells_known': 16,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1}
+        }
     },
     13: {
         'features': [],
         'sorcery_points': 13,
-        'cantrips_known': 6,
-        'spells_prepared': 17,
-        'spells_known': 17,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 17,
+            'spells_known': 17,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1}
+        }
     },
     14: {
         'features': ['Subclass feature'],
         'sorcery_points': 14,
-        'cantrips_known': 6,
-        'spells_prepared': 17,
-        'spells_known': 17,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 17,
+            'spells_known': 17,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1}
+        }
     },
     15: {
         'features': [],
         'sorcery_points': 15,
-        'cantrips_known': 6,
-        'spells_prepared': 18,
-        'spells_known': 18,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1, '8th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 18,
+            'spells_known': 18,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1, '8th': 1}
+        }
     },
     16: {
         'features': ['Ability Score Improvement'],
         'sorcery_points': 16,
-        'cantrips_known': 6,
-        'spells_prepared': 18,
-        'spells_known': 18,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1, '8th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 18,
+            'spells_known': 18,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1, '8th': 1}
+        }
     },
     17: {
         'features': ['Metamagic'],
         'sorcery_points': 17,
-        'cantrips_known': 6,
-        'spells_prepared': 19,
-        'spells_known': 19,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1, '8th': 1, '9th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 19,
+            'spells_known': 19,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 2, '6th': 1, '7th': 1, '8th': 1, '9th': 1}
+        }
     },
     18: {
         'features': ['Subclass feature'],
         'sorcery_points': 18,
-        'cantrips_known': 6,
-        'spells_prepared': 20,
-        'spells_known': 20,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 3, '6th': 1, '7th': 1, '8th': 1, '9th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 20,
+            'spells_known': 20,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 3, '6th': 1, '7th': 1, '8th': 1, '9th': 1}
+        }
     },
     19: {
         'features': ['Epic Boon'],
         'sorcery_points': 19,
-        'cantrips_known': 6,
-        'spells_prepared': 21,
-        'spells_known': 21,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 3, '6th': 2, '7th': 1, '8th': 1, '9th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 21,
+            'spells_known': 21,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 3, '6th': 2, '7th': 1, '8th': 1, '9th': 1}
+        }
     },
     20: {
         'features': ['Arcane Apotheosis'],
         'sorcery_points': 20,
-        'cantrips_known': 6,
-        'spells_prepared': 22,
-        'spells_known': 22,
-        'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 3, '6th': 2, '7th': 2, '8th': 1, '9th': 1}
+        'spellcasting': {
+            'cantrips_known': 6,
+            'spells_prepared': 22,
+            'spells_known': 22,
+            'spell_slots': {'1st': 4, '2nd': 3, '3rd': 3, '4th': 3, '5th': 3, '6th': 2, '7th': 2, '8th': 1, '9th': 1}
+        }
     },
 }
+
+FONT_OF_MAGIC: Dict[int, Dict[str, int]] = {
+    1: {'sorcery_point_cost': 2, 'min_sorcerer_level': 2},
+    2: {'sorcery_point_cost': 3, 'min_sorcerer_level': 3},
+    3: {'sorcery_point_cost': 5, 'min_sorcerer_level': 5},
+    4: {'sorcery_point_cost': 6, 'min_sorcerer_level': 7},
+    5: {'sorcery_point_cost': 7, 'min_sorcerer_level': 9},
+}
+
 SORCERER_FEATURES: Dict[str, Any] = {
     'Spellcasting': (
         "Drawing from your innate magic, you can cast spells. See chapter 7 for the rules on spellcasting. "
@@ -210,14 +259,15 @@ SORCERER_FEATURES: Dict[str, Any] = {
         "  - You have Advantage on the attack rolls of Sorcerer spells you cast.\n"
         "  - You can use this feature twice, and you regain all expended uses of it when you finish a Long Rest."
     ),
-    'Font of Magic': (
+    'Font of Magic': [
         "You can tap into the wellspring of magic within yourself. This wellspring is represented by Sorcery Points, which allow you to create a variety of magical effects.\n\n"
         "  - Sorcery Points. You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer Features table. You can’t have more Sorcery Points than the number shown in the table for your level. You regain all expended Sorcery Points when you finish a Long Rest.\n\n"
         "  - Using Sorcery Points. You can use your Sorcery Points to fuel the options below, along with other features, such as Metamagic, that use those points.\n\n"
         "  - Converting Spell Slots to Sorcery Points. You can expend a spell slot to gain a number of Sorcery Points equal to the slot’s level (no action required).\n\n"
         "  - Creating Spell Slots. As a Bonus Action, you can transform unexpended Sorcery Points into one spell slot. The Creating Spell Slots table shows the cost of creating a spell slot of a given level, and it lists the minimum Sorcerer level you must be to create a slot. You can create a spell slot no higher than level 5.\n\n"
-        "  - Any spell slot you create with this feature vanishes when you finish a Long Rest."
-    ),
+        "  - Any spell slot you create with this feature vanishes when you finish a Long Rest.",
+        FONT_OF_MAGIC
+    ],
     'Metamagic': (
         "Because your magic flows from within, you can alter your spells to suit your needs; you gain two Metamagic options of your choice from “Metamagic Options” later in this class’s description. You use the chosen options to temporarily modify spells you cast. To use an option, you must spend the number of Sorcery Points that it costs.\n\n"
         "  - You can use only one Metamagic option on a spell when you cast it unless otherwise noted in one of those options.\n\n"
@@ -243,13 +293,6 @@ SORCERER_FEATURES: Dict[str, Any] = {
     ),
 }
 
-FONT_OF_MAGIC: Dict[int, Dict[str, int]] = {
-    1: {'sorcery_point_cost': 2, 'min_sorcerer_level': 2},
-    2: {'sorcery_point_cost': 3, 'min_sorcerer_level': 3},
-    3: {'sorcery_point_cost': 5, 'min_sorcerer_level': 5},
-    4: {'sorcery_point_cost': 6, 'min_sorcerer_level': 7},
-    5: {'sorcery_point_cost': 7, 'min_sorcerer_level': 9},
-}
 
 # Aberrant Sorcery Subclass
 ABERRANT_SORCERY: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
@@ -409,7 +452,7 @@ WILD_MAGIC_SORCERY: Dict[Union[str, int], Union[str, Dict[str, str]]] = {
     18: {
         'Tamed Surge': (
             "Immediately after you cast a Sorcerer spell with a spell slot, you can create an effect of your choice from the Wild Magic Surge table instead of rolling on that table. You can choose any effect in the table except for the final row, and if the chosen effect involves a roll, you must make it.\n\n"
-            "Once you use this feature, you can’t do so again until you finish a Long Rest."
+            "Once you use this feature, you can’t do again until you finish a Long Rest."
         )
     }
 }
@@ -419,7 +462,7 @@ WILD_MAGIC_SURGE_TABLE: Dict[str, str] = {
     "05-08": "A creature that is Friendly toward you appears in a random unoccupied space within 60 feet of you. The creature is under the DM’s control and disappears 1 minute later. Roll 1d4 to determine the creature: on a 1, a Modron Duodrone appears; on a 2, a Flumph appears; on a 3, a Modron Monodrone appears; on a 4, a Unicorn appears. See the Monster Manual for the creature’s stat block.",
     "09-12": "For the next minute, you regain 5 Hit Points at the start of each of your turns.",
     "13-16": "Creatures have Disadvantage on saving throws against the next spell you cast in the next minute that involves a saving throw.",
-    "17-20": "You are subjected to an effect that lasts for 1 minute unless its description says otherwise. Roll 1d8 to determine the effect: on a 1, you’re surrounded by faint, ethereal music only you and creatures within 5 feet of you can hear; on a 2, your size increases by one size category; on a 3, you grow a long beard made of feathers that remains until you sneeze, at which point the feathers explode from your face and vanish; on a 4, you must shout when you speak; on a 5, illusory butterflies flutter in the air within 10 feet of you; on a 6, an eye appears on your forehead, granting you Advantage on Wisdom (Perception) checks; on an 7, pink bubbles float out of your mouth whenever you speak; on an 8, your skin turns a vibrant shade of blue for 24 hours or until the effect is ended by a Remove Curse spell.",
+    "17-20": "You are subjected to an effect that lasts for 1 minute unless its description says otherwise. Roll 1d8 to determine the effect: on a 1, you’re surrounded by faint, ethereal music only you and creatures within 5 feet of you can hear; on a 2, your size increases by one size category; on a 3, you grow a long beard made of feathers that remains until you sneeze, at which point the feathers explode from your face and vanish; on a 4, you must shout when you speak; on a 5, illusory butterflies flutter in the air within 10 feet of you; on a 6, an eye appears on your forehead, granting you Advantage on Wisdom (Perception) checks; on a 7, pink bubbles float out of your mouth whenever you speak; on a 8, your skin turns a vibrant shade of blue for 24 hours or until the effect is ended by a Remove Curse spell.",
     "21-24": "For the next minute, all your spells with a casting time of an action have a casting time of a Bonus Action.",
     "25-28": "You are transported to the Astral Plane until the end of your next turn. You then return to the space you previously occupied or the nearest unoccupied space if that space is occupied.",
     "29-32": "The next time you cast a spell that deals damage within the next minute, don’t roll the spell’s damage dice for the damage. Instead use the highest number possible for each damage die.",

@@ -49,7 +49,8 @@ def add_feat(character, feat_name, feat_data=None, available_fighting_styles=Non
         from misc.feats import FIGHTING_STYLE_FEATS
         if not available_fighting_styles:
             available_fighting_styles = list(FIGHTING_STYLE_FEATS.keys())
-        if not available_fighting_styles:
+        if feat_name not in available_fighting_styles:
+            print(f"{feat_name} is not available to choose from.")
             return None
         style = choose_fighting_style(available_fighting_styles, character=character)
         if style is None:
